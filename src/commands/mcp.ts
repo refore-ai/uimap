@@ -1,5 +1,56 @@
 import { Command } from 'commander';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { createCurrentAuthApi } from '../lib/index.js';
+import { downloadWebToAiRecord, fetchWebToAiRecord, WEB_TO_AI_PARAMS_SCHEMA } from './web-to-ai.js';
+import { VERSION } from '../constants.js';
+import type { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { AnySchema, ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 
-export const ReforeMcpCommand = new Command('refore-mcp').description('Start Refore MCP server').action(async () => {});
+export function createToolExecuter<Args extends undefined | ZodRawShapeCompat | AnySchema = undefined>(
+  fn: ToolCallback<Args>,
+) {
+  const wrappedFn = async (...args: any[]) => {
+    try {
+      // @ts-ignore
+      return await fn(...args);
+    } catch (error) {
+      return {
+        isError: true,
+        content: [
+          {
+            type: 'text',
+            text: `Error: ${(error as Error).message}`,
+          },
+        ],
+      };
+    }
+  };
 
-export const UiMapMcpCommand = new Command('uimap-mcp').description('Start UIMap MCP server').action(async () => {});
+  return wrappedFn as ToolCallback<Args>;
+}
+
+export const McpCommand = new Command('mcp').description('Start Refore MCP server').action(async () => {
+  const api = createCurrentAuthApi();
+
+  const server = new McpServer({ name: 'refore', version: VERSION }, { capabilities: { tools: {} } });
+  server.registerTool(
+    'web_to_ai',
+    {
+      description: 'Convert a website to an HTML snapshot for AI processing.',
+      inputSchema: WEB_TO_AI_PARAMS_SCHEMA,
+    },
+    createToolExecuter<typeof WEB_TO_AI_PARAMS_SCHEMA>(async (args) => {
+      const record = await fetchWebToAiRecord(api, args);
+
+      const files = await downloadWebToAiRecord(record, args.output);
+
+      return {
+        content: [{ type: 'text', text: `Website converted HTML snapshot saved to ${files.join(', ')}` }],
+      };
+    }),
+  );
+
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+});

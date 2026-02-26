@@ -6,6 +6,7 @@ import { ServerRegion } from '../types/index.js';
 import { VERSION } from '../constants.js';
 import { jwtDecode } from 'jwt-decode';
 import { Context } from './context.js';
+import consola from 'consola';
 
 const onResponse: FetchHooks['onResponse'] = (context) => {
   if (context.error) {
@@ -98,6 +99,7 @@ export class APIClient {
       await this.refreshAuthToken();
       return true;
     } catch (error) {
+      consola.debug('validateCredentials error', error);
       return false;
     }
   }

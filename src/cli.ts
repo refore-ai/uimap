@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command, CommanderError } from 'commander';
-import { CredentialCommand, ReforeMcpCommand, UiMapMcpCommand, AddSkillCommand } from './commands/index.js';
+import { CredentialCommand, McpCommand, AddSkillCommand } from './commands/index.js';
 
 import type { IGlobalOptions } from './types/index.js';
 import { checkSkillOutdated, Context } from './lib';
@@ -22,15 +22,14 @@ const program = new Command()
       consola.level = LogLevels.verbose;
     }
     const actionName = actionCommand.name();
-    if (actionName !== 'add-skill' && !actionName.includes('mcp')) {
+    if (actionName !== 'add-skill' && actionName !== 'mcp') {
       checkSkillOutdated();
     }
   })
   // register sub commands
   .addCommand(CredentialCommand)
   .addCommand(WebToAiCommand)
-  .addCommand(ReforeMcpCommand)
-  .addCommand(UiMapMcpCommand)
+  .addCommand(McpCommand)
   .addCommand(AddSkillCommand)
   // process unknown command
   .on('command:*', (operands) => {
