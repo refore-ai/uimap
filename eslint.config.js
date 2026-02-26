@@ -8,6 +8,7 @@ export default combine(
     overrides: {
       'ts/ban-ts-comment': 'off',
       'ts/no-redeclare': 'off',
+      'no-console': 'off',
     },
   }),
   imports(),

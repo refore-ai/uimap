@@ -7,20 +7,28 @@ import path from 'node:path';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import z from 'zod';
 
-export interface IWebToAiParams {
-  url: string;
-  width?: number;
-  height?: number;
-  theme?: string;
-  locale?: string;
-}
+export const WEB_TO_AI_PARAMS_SCHEMA = z.object({
+  url: z.string(),
+  width: z.number().default(1920).describe('The width of the website'),
+  height: z.number().default(1080).describe('The height of the website'),
+  theme: z.enum(['light', 'dark']).default('light').describe('The theme of the website'),
+  locale: z
+    .string()
+    .optional()
+    .describe('The locale of the website (e.g. en-US, zh-CN), it will affect the language of the website content.'),
+  output: z.string().default('./').describe('The output directory of the refore record'),
+});
+
+export type IWebToAiParams = Omit<z.input<typeof WEB_TO_AI_PARAMS_SCHEMA>, 'output'>;
+
+type IWebToAiCommandOptions = Omit<z.infer<typeof WEB_TO_AI_PARAMS_SCHEMA>, 'url'>;
 
 export interface IWebToAiRecord {
   id: string;
   urls: string[];
 }
 
-export async function fetchWebToAiRecord(api: APIClient, params: IWebToAiParams): Promise<IWebToAiRecord> {
+export async function fetchWebToAiRecord(api: APIClient, params: IWebToAiParams) {
   return api.fetch<IWebToAiRecord>('/api/web-to-ai/record-by-url', {
     method: 'POST',
     body: {
@@ -46,20 +54,6 @@ export async function downloadWebToAiRecord(record: IWebToAiRecord, outputDir: s
   return files;
 }
 
-export const WEB_TO_AI_PARAMS_SCHEMA = z.object({
-  url: z.string(),
-  width: z.number().default(1920).describe('The width of the website'),
-  height: z.number().default(1080).describe('The height of the website'),
-  theme: z.enum(['light', 'dark']).default('light').describe('The theme of the website'),
-  locale: z
-    .string()
-    .optional()
-    .describe('The locale of the website (e.g. en-US, zh-CN), it will affect the language of the website content.'),
-  output: z.string().default('./').describe('The output directory of the refore record'),
-});
-
-type IWebToAiOptions = Omit<z.infer<typeof WEB_TO_AI_PARAMS_SCHEMA>, 'url'>;
-
 export const WebToAiCommand = new Command('web-to-ai')
   .description('Convert a website to an HTML snapshot for AI processing')
   .addOption(
@@ -84,7 +78,7 @@ export const WebToAiCommand = new Command('web-to-ai')
     ),
   )
   .addArgument(new Argument('<url>', 'The URL of the website to convert'))
-  .action(async (url: string, options: IWebToAiOptions) => {
+  .action(async (url: string, options: IWebToAiCommandOptions) => {
     const api = createCurrentAuthApi();
 
     if (!URL.canParse(url)) {
