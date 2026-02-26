@@ -1,0 +1,68 @@
+{
+  "name": "@refore/cli",
+  "version": "0.0.1",
+  "description": "Integrated command-line tool for Refore AI.",
+  "type": "module",
+  "bin": {
+    "refore": "./dist/cli.mjs"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsx scripts/compute-skill-checksums.ts && tsdown",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "version": "changeset version",
+    "release": "changeset publish"
+  },
+  "keywords": [
+    "refore",
+    "web-to-ai",
+    "uimap",
+    "cli",
+    "mcp",
+    "skill"
+  ],
+  "author": "Refore AI Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.0",
+    "chalk": "^5.3.0",
+    "commander": "^14.0.3",
+    "conf": "^13.0.1",
+    "consola": "^3.2.3",
+    "enquirer": "^2.4.1",
+    "execa": "^9.5.1",
+    "is-local-address": "^2.3.2",
+    "jwt-decode": "^4.0.0",
+    "ofetch": "^1.5.1",
+    "ora": "^9.3.0",
+    "radashi": "^12.7.1",
+    "yaml": "^2.8.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^7.4.3",
+    "@changesets/cli": "^2.27.9",
+    "@types/node": "^24.10.13",
+    "eslint": "^9.39.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "prettier": "^3.3.3",
+    "tsdown": "^0.20.3",
+    "tsx": "^4.21.0",
+    "type-fest": "^5.4.4",
+    "typescript": "^5.9.3"
+  },
+  "packageManager": "pnpm@10.30.2+sha512.36cdc707e7b7940a988c9c1ecf88d084f8514b5c3f085f53a2e244c2921d3b2545bc20dd4ebe1fc245feec463bb298aecea7a63ed1f7680b877dc6379d8d0cb4"
+}
