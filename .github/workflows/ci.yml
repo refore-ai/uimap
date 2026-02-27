@@ -38,6 +38,6 @@ jobs:
 
       - name: Test CLI
         run: |
-          chmod +x dist/cli.js
-          ./dist/cli.js --version
-          ./dist/cli.js --help
+          chmod +x dist/cli.mjs
+          ./dist/cli.mjs --version
+          ./dist/cli.mjs --help
