@@ -4,14 +4,12 @@ A command-line tool for [Refore AI](https://reforeai.cn). Manage API credentials
 
 ## Features
 
-- **Credential management** — Add, list, remove, and switch API credentials
+- **Credential management** — Add, list, delete, and switch API credentials
 - **Web to AI** — Convert web page URLs to HTML snapshots for AI processing
 - **MCP servers** — Provide MCP services for Refore AI CLI commands
 - **Skills** — Install Refore CLI skills into your agent environment
 
 ## Installation
-
-### Global install
 
 ```bash
 # npm (recommended)
@@ -22,12 +20,6 @@ pnpm add -g @refore/cli
 
 # yarn
 yarn global add @refore/cli
-```
-
-### Run without installing
-
-```bash
-npx @refore/cli --help
 ```
 
 ## Quick start
@@ -46,6 +38,14 @@ You will be prompted for:
 - **API Key** — Your Refore API key
 - **App ID** — Your application ID
 
+You can also set the credential by environment variables in your shell:
+
+```bash
+export REFORE_SERVER=<China or World>
+export REFORE_API_KEY=<your_api_key>
+export REFORE_APP_ID=<your_app_id>
+```
+
 ### Install skills
 
 Install Refore CLI skills into your agent skills directory (e.g. for Cursor):
@@ -60,14 +60,29 @@ By default skills are installed to `./.agents/skills`. Use `-o` to override:
 refore add-skill -o /path/to/skills
 ```
 
-### Start MCP servers
+### MCP servers
 
 ```bash
-refore refore-mcp
-refore uimap-mcp
+npx @refore/cli mcp
 ```
 
-You can explore more commands by running `refore --help`.
+Configure MCP server in your `mcp.json` file (for example in Cursor):
+
+```json
+{
+  "mcpServers": {
+    "refore-cli": {
+      "command": "npx",
+      "args": ["-y", "@refore/cli", "mcp"],
+      "env": {
+        "REFORE_SERVER": "<China or World>",
+        "REFORE_API_KEY": "<your_api_key>",
+        "REFORE_APP_ID": "<your_app_id>"
+      }
+    }
+  }
+}
+```
 
 ## Publish
 

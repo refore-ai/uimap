@@ -1,5 +1,5 @@
 import { Argument, Command, Option } from 'commander';
-import { createCurrentAuthApi } from '../lib';
+import { createCurrentCredentialAPI } from '../lib';
 import type { APIClient } from '../lib';
 import consola from 'consola';
 import { oraPromise } from 'ora';
@@ -79,7 +79,7 @@ export const WebToAiCommand = new Command('web-to-ai')
   )
   .addArgument(new Argument('<url>', 'The URL of the website to convert'))
   .action(async (url: string, options: IWebToAiCommandOptions) => {
-    const api = createCurrentAuthApi();
+    const api = createCurrentCredentialAPI();
 
     if (!URL.canParse(url)) {
       throw new Error('Invalid URL, please provide a valid URL');

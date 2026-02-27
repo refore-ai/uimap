@@ -142,10 +142,12 @@ export const CredentialCommand = new Command('credential')
       });
 
       CredentialStore.set('default', answer.credential);
+
+      consola.success(`Default credential is set to ${chalk.cyan(answer.credential)}.`);
     }),
   )
   .addCommand(
-    new Command('remove').description('Remove refore credentials').action(async () => {
+    new Command('delete').description('Delete refore credentials').action(async () => {
       const credentials = CredentialStore.get('credentials');
       if (!credentials) {
         consola.warn('No available credentials found, please add a credential first.');
@@ -155,7 +157,7 @@ export const CredentialCommand = new Command('credential')
       const { names } = await enquirer.prompt<{ names: string[] }>({
         type: 'multiselect',
         name: 'names',
-        message: 'Select credentials to remove:',
+        message: 'Select credentials to delete:',
         choices: Object.keys(credentials),
       });
 
@@ -172,9 +174,9 @@ export const CredentialCommand = new Command('credential')
       if (defaultCredential && names.includes(defaultCredential)) {
         CredentialStore.delete('default');
       }
-      consola.success('Credentials removed successfully');
+      consola.success('Credentials deleted.');
       if (!CredentialStore.has('default')) {
-        consola.warn('No default credential is set, please specify a new default credential.');
+        consola.warn('No default credential is set, please set a new default credential.');
       }
     }),
   )

@@ -49,3 +49,4 @@ temp/
 *.tmp
 
 .agents/skills/refore-cli
+mcp.json

@@ -34,10 +34,10 @@ refore credential list
 refore credential default
 ```
 
-### Remove credentials
+### Delete credentials
 
 ```bash
-refore credential remove
+refore credential delete
 ```
 
 ### Use a specific credential for a command

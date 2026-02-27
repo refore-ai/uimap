@@ -35,20 +35,9 @@ async function installSkill(skillName: string, targetDir: string) {
 
 export const AddSkillCommand = new Command('add-skill')
   .description('Add skills to local directory')
-  // .addArgument(
-  //   new Argument('[name]', 'Skill name to install (use "all" to install all skills)')
-  //     .choices(['all', ...listBuiltinSkills()])
-  //     .default('all'),
-  // )
   .addOption(new Option('-o, --output <directory>', 'Specify directory to install to').default('./.agents/skills'))
-  .addHelpText(
-    'after',
-    '\nIf you want multiple agent directories or other complex usage, please use: `npx skills add refore-ai/cli [name]` or refer to https://skills.sh',
-  )
   .action(async (options: ISkillAddOptions) => {
     const availableSkills = listBuiltinSkills();
-    // Determine which skills to install
-    // const skillsToInstall = name === 'all' ? availableSkills : name.split(',').map((skill) => skill.trim());
 
     const targetDir = resolve(process.cwd(), options.output);
     // Install the skill(s)
@@ -56,5 +45,8 @@ export const AddSkillCommand = new Command('add-skill')
       await installSkill(skillName, targetDir);
     }
 
-    consola.success(`Skill installed.`);
+    consola.success(
+      `Skill installed.\n` +
+        `  If you want to add skills in different agent directories, please use: \`npx skills add refore-ai/cli refore-cli\``,
+    );
   });

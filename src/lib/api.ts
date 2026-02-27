@@ -113,7 +113,21 @@ export class APIClient {
   }
 }
 
-export function createCurrentAuthApi() {
+export function createCurrentCredentialAPI() {
+  const envCredential = {
+    server: process.env.REFORE_SERVER,
+    apiKey: process.env.REFORE_API_KEY,
+    appId: process.env.REFORE_APP_ID,
+  };
+
+  if (envCredential.server && envCredential.apiKey && envCredential.appId) {
+    return new APIClient({
+      server: envCredential.server,
+      apiKey: envCredential.apiKey,
+      appId: envCredential.appId,
+    });
+  }
+
   const credentialName = Context.credential ?? CredentialStore.get('default');
 
   if (!credentialName) {

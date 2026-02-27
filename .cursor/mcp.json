@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "refore_local": {
-      "command": "node",
-      "args": ["./dist/cli.mjs", "mcp"]
-    }
-  }
-}
