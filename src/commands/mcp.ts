@@ -37,7 +37,7 @@ export const McpCommand = new Command('mcp').description('Start Refore MCP serve
   server.registerTool(
     'search_uimap',
     {
-      description: 'Search for operation guides to complete tasks on websites.',
+      description: 'Search for operation guides to complete tasks through browser automation.',
       inputSchema: SEARCH_UIMAP_PARAMS_SCHEMA,
     },
     createToolExecuter<typeof SEARCH_UIMAP_PARAMS_SCHEMA>(async (args) => {
