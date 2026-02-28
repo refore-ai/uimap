@@ -49,4 +49,6 @@ temp/
 *.tmp
 
 .agents/skills/refore-cli
+.claude/skills/refore-cli
 mcp.json
+.playwright-cli/

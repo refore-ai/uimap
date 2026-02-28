@@ -1,10 +1,11 @@
 import { Command } from 'commander';
-import { APIClient, CredentialStore } from '../lib/index.js';
+import { APIClient, createCurrentCredentialAPI, CredentialStore } from '../lib/index.js';
 import enquirer from 'enquirer';
 import consola from 'consola';
 import { oraPromise } from 'ora';
 import { ServerRegion } from '../types/index.js';
 import chalk from 'chalk';
+import { truncate } from '../lib/string.js';
 
 async function promptNewCredential() {
   let { server } = await enquirer.prompt<{ server: string }>({
@@ -127,6 +128,30 @@ export const CredentialCommand = new Command('credential')
     }),
   )
   .addCommand(
+    new Command('status').description('Show the status of the current credential').action(async () => {
+      const api = createCurrentCredentialAPI();
+
+      const result = await oraPromise(
+        async () => {
+          const available = await api.validateCredentials();
+          return { available };
+        },
+        { text: 'Getting credential status...' },
+      );
+
+      consola.info(`Current credential: ${chalk.cyan(api.credential.name)}.`);
+      consola.info(`Server: ${chalk.cyan(api.credential.server)}`);
+      consola.info(`API Key: ${chalk.cyan(truncate(api.credential.apiKey, { head: 8, tail: 4, omission: '******' }))}`);
+      consola.info(`App ID: ${chalk.cyan(api.credential.appId)}`);
+
+      if (result.available) {
+        consola.success('Credential is still valid.');
+      } else {
+        consola.error('Credential is no longer valid, please use "refore credential add" to add a new credential.');
+      }
+    }),
+  )
+  .addCommand(
     new Command('default').description('Set the default credential').action(async () => {
       const credentials = CredentialStore.get('credentials');
       if (!credentials) {
@@ -139,6 +164,7 @@ export const CredentialCommand = new Command('credential')
         name: 'credential',
         message: 'Select a credential:',
         choices: Object.keys(credentials),
+        initial: CredentialStore.get('default'),
       });
 
       CredentialStore.set('default', answer.credential);
@@ -199,7 +225,7 @@ export const CredentialCommand = new Command('credential')
           [
             `${i + 1}. ${name}${defaultCredential === name ? chalk.green(' (Default)') : ''}`,
             `   Server:   ${credential.server}`,
-            `   API Key:  ${credential.apiKey.slice(0, 8)}******${credential.apiKey.slice(-4)}`,
+            `   API Key:  ${truncate(credential.apiKey, { head: 8, tail: 4, omission: '******' })}`,
             `   App ID:   ${credential.appId}`,
           ].join('\n'),
         );

@@ -28,7 +28,7 @@ const onResponse: FetchHooks['onResponse'] = (context) => {
 };
 
 export class APIClient {
-  constructor(private readonly credential: ICredential) {}
+  constructor(public readonly credential: ICredential & { name?: string }) {}
 
   private getBaseURL(server: ServerRegion | string) {
     if (server === ServerRegion.WORLD) {
@@ -111,6 +111,14 @@ export class APIClient {
     });
     return data;
   }
+}
+
+export function getCurrentCredential() {
+  const envCredential = {
+    server: process.env.REFORE_SERVER,
+    apiKey: process.env.REFORE_API_KEY,
+    appId: process.env.REFORE_APP_ID,
+  };
 }
 
 export function createCurrentCredentialAPI() {
