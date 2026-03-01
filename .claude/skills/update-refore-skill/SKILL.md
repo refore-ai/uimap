@@ -13,7 +13,6 @@ Read these files in parallel:
 
 - `src/cli.ts` — global options and registered commands
 - `src/commands/credential.ts` — all credential subcommands and their interactive prompts
-- `src/commands/web-to-ai.ts` — arguments, options schema, and defaults
 - `src/commands/uimap.ts` — arguments and options
 - `src/lib/api.ts` — `createCurrentCredentialAPI()` to identify environment variable support
 - `package.json` — package name for install command
@@ -31,9 +30,8 @@ All documentation lives in a single file. Rewrite only what is missing, inaccura
 ### File structure (keep this order)
 
 1. **YAML frontmatter** — `name` stays as-is; update `description` to reflect actual user-facing use cases, leading with the most commonly used features
-2. **Quick reference** — one bash block, one example per major feature
-3. **Feature sections** — one H2 per user-facing command, ordered by usage frequency (most used first)
-4. **Installation** — minimal: one install command + external link
+2. **Feature sections** — one H2 per user-facing command, ordered by usage frequency (most used first)
+3. **Installation** — minimal: one install command + external link
 
 ### Format conventions
 
