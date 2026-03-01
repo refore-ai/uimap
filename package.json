@@ -1,5 +1,5 @@
 {
-  "name": "uimap",
+  "name": "@refore-ai/uimap",
   "version": "0.1.0",
   "description": "A CLI for UIMap.",
   "type": "module",
@@ -24,7 +24,6 @@
   },
   "keywords": [
     "refore",
-    "web-to-ai",
     "uimap",
     "cli",
     "mcp",

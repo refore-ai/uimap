@@ -6,7 +6,7 @@ import type { IGlobalOptions } from './types/index.js';
 import { checkSkillOutdated, Context } from './lib';
 import { VERSION } from './constants.js';
 import consola, { LogLevels } from 'consola';
-import { WebToAiCommand } from './commands/web-to-ai.js';
+// import { WebToAiCommand } from './commands/web-to-ai.js';
 import { UIMapCommand } from './commands/uimap.js';
 
 const program = new Command()
@@ -29,7 +29,7 @@ const program = new Command()
   })
   // register sub commands
   .addCommand(CredentialCommand)
-  .addCommand(WebToAiCommand)
+  // .addCommand(WebToAiCommand)
   .addCommand(UIMapCommand)
   .addCommand(McpCommand)
   .addCommand(AddSkillCommand)

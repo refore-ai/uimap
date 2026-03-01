@@ -5,7 +5,6 @@ A command-line tool for [Refore AI](https://reforeai.cn). Manage API credentials
 ## Features
 
 - **Credential management** — Add, list, delete, and switch API credentials
-- **Web to AI** — Convert web page URLs to HTML snapshots for AI processing
 - **MCP servers** — Provide MCP services for Refore AI CLI commands
 - **Skills** — Install Refore CLI skills into your agent environment
 
