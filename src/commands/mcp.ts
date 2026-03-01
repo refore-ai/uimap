@@ -30,8 +30,8 @@ export function createToolExecuter<Args extends undefined | ZodRawShapeCompat | 
   return wrappedFn as ToolCallback<Args>;
 }
 
-export const McpCommand = new Command('mcp').description('Start Refore MCP server').action(async () => {
-  const server = new McpServer({ name: 'refore-cli', version: VERSION });
+export const McpCommand = new Command('mcp').description('Start UIMap MCP server').action(async () => {
+  const server = new McpServer({ name: 'uimap', version: VERSION });
   const api = createCurrentCredentialAPI();
 
   server.registerTool(

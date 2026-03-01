@@ -56,6 +56,6 @@ export function checkSkillOutdated() {
     .map((entry) => entry.name);
 
   if (outdated.length > 0) {
-    consola.info(`Skill update available. Run \`refore add-skill\` to update.`);
+    consola.info(`Skill update available. Run \`uimap add-skill\` to update.`);
   }
 }

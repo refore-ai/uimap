@@ -30,7 +30,7 @@ export const BUILTIN_TEMPLATES: SkillTemplateDefinition[] = [
 ## Usage
 
 \`\`\`bash
-refore skill run {{name}}
+uimap skill run {{name}}
 \`\`\`
 
 ## Configuration

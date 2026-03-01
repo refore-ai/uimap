@@ -82,7 +82,7 @@ export class APIClient {
         const headers = new Headers();
         context.options.query = {
           ...context.options.query,
-          client: 'refore-cli',
+          client: 'uimap',
           version: VERSION,
           appId: this.credential.appId,
         };
@@ -145,7 +145,7 @@ export function createCurrentCredentialAPI() {
   const credential = CredentialStore.get('credentials')?.[credentialName];
   if (!credential) {
     throw new Error(
-      `Credential "${credentialName}" not exists, please specify a correct credential or use 'refore credential add' to add a credential`,
+      `Credential "${credentialName}" not exists, please specify a correct credential or use 'uimap credential add' to add a credential`,
     );
   }
 

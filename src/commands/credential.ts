@@ -49,9 +49,9 @@ async function promptNewCredential() {
 }
 
 export const CredentialCommand = new Command('credential')
-  .description('Manage authentication for Refore AI')
+  .description('Manage authentication for UIMap')
   .addCommand(
-    new Command('add').description('Add a new Refore AI credential').action(async () => {
+    new Command('add').description('Add a new UIMap credential').action(async () => {
       const newCredential = await promptNewCredential();
 
       const api = new APIClient({
@@ -147,7 +147,7 @@ export const CredentialCommand = new Command('credential')
       if (result.available) {
         consola.success('Credential is still valid.');
       } else {
-        consola.error('Credential is no longer valid, please use "refore credential add" to add a new credential.');
+        consola.error('Credential is no longer valid, please use "uimap credential add" to add a new credential.');
       }
     }),
   )
@@ -173,7 +173,7 @@ export const CredentialCommand = new Command('credential')
     }),
   )
   .addCommand(
-    new Command('delete').description('Delete refore credentials').action(async () => {
+    new Command('delete').description('Delete UIMap credentials').action(async () => {
       const credentials = CredentialStore.get('credentials');
       if (!credentials) {
         consola.warn('No available credentials found, please add a credential first.');
@@ -207,7 +207,7 @@ export const CredentialCommand = new Command('credential')
     }),
   )
   .addCommand(
-    new Command('list').description('View all refore credentials').action(() => {
+    new Command('list').description('View all UIMap credentials').action(() => {
       const credentials = CredentialStore.get('credentials');
       if (!credentials) {
         consola.warn(`You have no credentials, please add a credential first.`);

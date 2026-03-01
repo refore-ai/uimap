@@ -1,40 +1,40 @@
-# Refore CLI
+# UIMap CLI
 
-A command-line tool for [Refore AI](https://reforeai.cn). Manage API credentials, convert web pages to AI-readable snapshots, run MCP servers, and install agent skills.
+A command-line tool for [UIMap](https://uimap.ai). Manage API credentials, run MCP servers, and install agent skills.
 
 ## Features
 
 - **Credential management** — Add, list, delete, and switch API credentials
-- **MCP servers** — Provide MCP services for Refore AI CLI commands
-- **Skills** — Install Refore CLI skills into your agent environment
+- **MCP servers** — Provide MCP services for UIMap CLI commands
+- **Skills** — Install UIMap CLI skills into your agent environment
 
 ## Installation
 
 ```bash
 # npm (recommended)
-npm install -g @refore/cli
+npm install -g @refore-ai/uimap
 
 # pnpm
-pnpm add -g @refore/cli
+pnpm add -g @refore-ai/uimap
 
 # yarn
-yarn global add @refore/cli
+yarn global add @refore-ai/uimap
 ```
 
 ## Quick start
 
 ### Add a credential
 
-Get your API Key and App ID from the [Refore AI API Key page](https://reforeai.cn/user/api-key), then:
+Get your API Key and App ID from the [UIMap API Key page](https://uimap.ai/user/api-key), then:
 
 ```bash
-refore credential add
+uimap credential add
 ```
 
 You will be prompted for:
 
 - **Server** — `China`, `World`, or a custom URL
-- **API Key** — Your Refore API key
+- **API Key** — Your UIMap API key
 - **App ID** — Your application ID
 
 You can also set the credential by environment variables in your shell:
@@ -47,22 +47,22 @@ export REFORE_APP_ID=<your_app_id>
 
 ### Install skills
 
-Install Refore CLI skills into your agent skills directory (e.g. for Cursor):
+Install UIMap CLI skills into your agent skills directory (e.g. for Cursor):
 
 ```bash
-refore add-skill
+uimap add-skill
 ```
 
 By default skills are installed to `./.agents/skills`. Use `-o` to override:
 
 ```bash
-refore add-skill -o /path/to/skills
+uimap add-skill -o /path/to/skills
 ```
 
 ### MCP servers
 
 ```bash
-npx @refore/cli mcp
+npx @refore-ai/uimap mcp
 ```
 
 Configure MCP server in your `mcp.json` file (for example in Cursor):
@@ -70,9 +70,9 @@ Configure MCP server in your `mcp.json` file (for example in Cursor):
 ```json
 {
   "mcpServers": {
-    "refore-cli": {
+    "uimap": {
       "command": "npx",
-      "args": ["-y", "@refore/cli", "mcp"],
+      "args": ["-y", "@refore-ai/uimap", "mcp"],
       "env": {
         "REFORE_SERVER": "<China or World>",
         "REFORE_API_KEY": "<your_api_key>",
@@ -81,6 +81,13 @@ Configure MCP server in your `mcp.json` file (for example in Cursor):
     }
   }
 }
+```
+
+### Search for UI guides
+
+```bash
+uimap search "how to create a new project"
+uimap search "how to invite a team member" --domain example.com
 ```
 
 ## Publish

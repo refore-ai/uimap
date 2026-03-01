@@ -21,22 +21,20 @@ export async function searchUIMapGuide(api: APIClient, params: ISearchUIMapGuide
 
 type IUIMapSearchOptions = Omit<z.infer<typeof SEARCH_UIMAP_PARAMS_SCHEMA>, 'task'>;
 
-export const UIMapCommand = new Command('uimap').addCommand(
-  new Command('search')
-    .description('Search a page operation guide for your task')
-    .addOption(new Option('--domain [domain]', SEARCH_UIMAP_PARAMS_SCHEMA.shape.domain.description))
-    .addArgument(new Argument('<task>', SEARCH_UIMAP_PARAMS_SCHEMA.shape.task.description))
-    .action(async (task: string, options: IUIMapSearchOptions) => {
-      const api = createCurrentCredentialAPI();
+export const SearchCommand = new Command('search')
+  .description('Search a page operation guide for your task')
+  .addOption(new Option('--domain [domain]', SEARCH_UIMAP_PARAMS_SCHEMA.shape.domain.description))
+  .addArgument(new Argument('<task>', SEARCH_UIMAP_PARAMS_SCHEMA.shape.task.description))
+  .action(async (task: string, options: IUIMapSearchOptions) => {
+    const api = createCurrentCredentialAPI();
 
-      const response = await oraPromise(searchUIMapGuide(api, { task, ...options }), {
-        text: 'Searching uimap...',
-        successText: 'Search complete.',
-        failText: (err: Error) => err.message,
-      });
+    const response = await oraPromise(searchUIMapGuide(api, { task, ...options }), {
+      text: 'Searching uimap...',
+      successText: 'Search complete.',
+      failText: (err: Error) => err.message,
+    });
 
-      console.log(`\n${response.instruction}\n`);
+    console.log(`\n${response.instruction}\n`);
 
-      consola.info('Copy the above instruction and paste them into your agent tool for use.');
-    }),
-);
+    consola.info('Copy the above instruction and paste them into your agent tool for use.');
+  });

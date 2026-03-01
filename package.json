@@ -4,7 +4,7 @@
   "description": "A CLI for UIMap.",
   "type": "module",
   "bin": {
-    "refore": "./dist/cli.mjs"
+    "uimap": "./dist/cli.mjs"
   },
   "files": [
     "dist",
@@ -23,7 +23,6 @@
     "release": "changeset publish"
   },
   "keywords": [
-    "refore",
     "uimap",
     "cli",
     "mcp",

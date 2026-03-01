@@ -7,11 +7,11 @@ import { checkSkillOutdated, Context } from './lib';
 import { VERSION } from './constants.js';
 import consola, { LogLevels } from 'consola';
 // import { WebToAiCommand } from './commands/web-to-ai.js';
-import { UIMapCommand } from './commands/uimap.js';
+import { SearchCommand } from './commands/uimap.js';
 
 const program = new Command()
-  .name('refore')
-  .description('A CLI for Refore AI')
+  .name('uimap')
+  .description('A CLI for UIMap')
   .version(VERSION)
   .option('-c, --credential <credential>', 'use specific credential')
   .option('--verbose', 'verbose output')
@@ -30,13 +30,13 @@ const program = new Command()
   // register sub commands
   .addCommand(CredentialCommand)
   // .addCommand(WebToAiCommand)
-  .addCommand(UIMapCommand)
+  .addCommand(SearchCommand)
   .addCommand(McpCommand)
   .addCommand(AddSkillCommand)
   // process unknown command
   .on('command:*', (operands) => {
     console.error(`Unknown command: ${operands[0]}`);
-    console.error('Run "refore --help" to see available commands\n');
+    console.error('Run "uimap --help" to see available commands\n');
     process.exit(1);
   });
 

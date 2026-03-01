@@ -47,6 +47,6 @@ export const AddSkillCommand = new Command('add-skill')
 
     consola.success(
       `Skill installed.\n` +
-        `  If you want to add skills in different agent directories, please use: \`npx skills add refore-ai/cli refore-cli\``,
+        `  If you want to add skills in different agent directories, please use: \`npx skills add refore-ai/uimap uimap\``,
     );
   });
