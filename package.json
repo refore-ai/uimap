@@ -1,7 +1,7 @@
 {
-  "name": "@refore/cli",
-  "version": "0.0.1",
-  "description": "Integrated command-line tool for Refore AI.",
+  "name": "uimap",
+  "version": "0.1.0",
+  "description": "A CLI for UIMap.",
   "type": "module",
   "bin": {
     "refore": "./dist/cli.mjs"
