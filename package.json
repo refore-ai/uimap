@@ -1,6 +1,6 @@
 {
   "name": "@refore-ai/uimap",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "A CLI for UIMap.",
   "type": "module",
   "bin": {
@@ -13,14 +13,14 @@
     "LICENSE"
   ],
   "scripts": {
+    "prepare": "husky",
     "dev": "tsx src/cli.ts",
     "build": "tsx scripts/compute-skill-checksums.ts && tsdown",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "version": "changeset version",
-    "release": "changeset publish"
+    "release": "release-it"
   },
   "keywords": [
     "uimap",
@@ -51,16 +51,27 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.4.3",
-    "@changesets/cli": "^2.27.9",
+    "@commitlint/config-conventional": "^20.4.2",
+    "@commitlint/types": "^20.4.0",
     "@types/node": "^24.10.13",
+    "commitlint": "^20.4.2",
     "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
+    "husky": "^9.1.7",
+    "is-ci": "^4.1.0",
+    "lint-staged": "^16.3.1",
     "prettier": "^3.3.3",
+    "release-it": "^19.2.4",
+    "release-it-pnpm": "^4.6.6",
     "tsdown": "^0.20.3",
     "tsx": "^4.21.0",
     "type-fest": "^5.4.4",
     "typescript": "^5.9.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "packageManager": "pnpm@10.30.2+sha512.36cdc707e7b7940a988c9c1ecf88d084f8514b5c3f085f53a2e244c2921d3b2545bc20dd4ebe1fc245feec463bb298aecea7a63ed1f7680b877dc6379d8d0cb4"
 }
