@@ -6,6 +6,13 @@ export interface ICredential {
   appId: string;
 }
 
+// ========== OAuth (browser login) ==========
+export interface OAuthSession {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+}
+
 // ========== CLI Configuration ==========
 export interface CredentialConfig {
   credentials?: Record<string, ICredential>;

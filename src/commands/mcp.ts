@@ -41,14 +41,6 @@ export const McpCommand = new Command('mcp').description('Start UIMap MCP server
       inputSchema: SEARCH_UIMAP_PARAMS_SCHEMA,
     },
     createToolExecuter<typeof SEARCH_UIMAP_PARAMS_SCHEMA>(async (args) => {
-      server.sendLoggingMessage({
-        data: {
-          server: process.env.REFORE_SERVER,
-          apiKey: process.env.REFORE_API_KEY,
-          appId: process.env.REFORE_APP_ID,
-        },
-        level: 'info',
-      });
       const result = await searchUIMapGuide(api, args);
 
       return {

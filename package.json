@@ -44,7 +44,10 @@
     "is-local-address": "^2.3.2",
     "jwt-decode": "^4.0.0",
     "ofetch": "^1.5.1",
+    "open": "^11.0.0",
     "ora": "^9.3.0",
+    "p-wait-for": "^6.0.0",
+    "qs": "^6.15.0",
     "radashi": "^12.7.1",
     "yaml": "^2.8.2",
     "zod": "^4.3.6"
@@ -54,6 +57,7 @@
     "@commitlint/config-conventional": "^20.4.2",
     "@commitlint/types": "^20.4.0",
     "@types/node": "^24.10.13",
+    "@types/qs": "^6.14.0",
     "commitlint": "^20.4.2",
     "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",

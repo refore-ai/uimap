@@ -8,6 +8,7 @@ import { VERSION } from './constants.js';
 import consola, { LogLevels } from 'consola';
 // import { WebToAiCommand } from './commands/web-to-ai.js';
 import { SearchCommand } from './commands/uimap.js';
+import { LoginCommand } from './commands/login.js';
 
 const program = new Command()
   .name('uimap')
@@ -29,8 +30,8 @@ const program = new Command()
   })
   // register sub commands
   .addCommand(CredentialCommand)
-  // .addCommand(WebToAiCommand)
   .addCommand(SearchCommand)
+  .addCommand(LoginCommand)
   .addCommand(McpCommand)
   .addCommand(AddSkillCommand)
   // process unknown command

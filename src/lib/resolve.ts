@@ -6,9 +6,9 @@ import { PACKAGE_NAME } from '../constants';
 let cachedRoot: string | null = null;
 
 /**
- * Find the package root (directory containing package.json with name "@refore/cli")
+ * Find the package root (directory containing package.json with name "@refore-ai/uimap")
  * by walking up from the current module's directory.
- * Works in both development (src/) and after build (dist/), and when installed (node_modules/@refore/cli).
+ * Works in both development (src/) and after build (dist/), and when installed (node_modules/@refore-ai/uimap).
  */
 function getPackageRoot(): string {
   if (cachedRoot) {

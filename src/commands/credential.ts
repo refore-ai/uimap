@@ -3,27 +3,26 @@ import { APIClient, createCurrentCredentialAPI, CredentialStore } from '../lib/i
 import enquirer from 'enquirer';
 import consola from 'consola';
 import { oraPromise } from 'ora';
-import { ServerRegion } from '../types/index.js';
 import chalk from 'chalk';
 import { truncate } from '../lib/string.js';
+import { ServerRegion } from '../types/enum.js';
 
 async function promptNewCredential() {
   let { server } = await enquirer.prompt<{ server: string }>({
     type: 'select',
     name: 'server',
-    message: 'Server:',
+    message: 'Select a server region:',
     choices: [ServerRegion.CHINA, ServerRegion.WORLD, 'Custom'],
   });
 
   if (server === 'Custom') {
-    const { url: customServerURL } = await enquirer.prompt<{ url: string }>({
+    const { url } = await enquirer.prompt<{ url: string }>({
       type: 'input',
       name: 'url',
       message: 'Custom Server URL:',
       validate: (value: string) => value.length > 0 || 'Custom Server URL cannot be empty',
     });
-
-    server = customServerURL;
+    server = url;
   }
 
   const answers = await enquirer.prompt<{ apiKey: string; appId: string }>([
@@ -139,10 +138,12 @@ export const CredentialCommand = new Command('credential')
         { text: 'Getting credential status...' },
       );
 
-      consola.info(`Current credential: ${chalk.cyan(api.credential.name)}.`);
-      consola.info(`Server: ${chalk.cyan(api.credential.server)}`);
-      consola.info(`API Key: ${chalk.cyan(truncate(api.credential.apiKey, { head: 8, tail: 4, omission: '******' }))}`);
-      consola.info(`App ID: ${chalk.cyan(api.credential.appId)}`);
+      consola.info(
+        `Current credential: ${chalk.cyan(api.credential.name)}\n` +
+          `  Server: ${chalk.cyan(api.credential.server)}\n` +
+          `  API Key: ${chalk.cyan(truncate(api.credential.apiKey, { head: 8, tail: 4, omission: '******' }))}\n` +
+          `  App ID: ${chalk.cyan(api.credential.appId)}`,
+      );
 
       if (result.available) {
         consola.success('Credential is still valid.');

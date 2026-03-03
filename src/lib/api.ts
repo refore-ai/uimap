@@ -3,7 +3,7 @@ import { $fetch, ofetch } from 'ofetch';
 import { SessionStore, CredentialStore, getSessionKey } from './config.js';
 import type { ICredential } from '../types/index.js';
 import { ServerRegion } from '../types/index.js';
-import { VERSION } from '../constants.js';
+import { API_CLIENT_NAME, VERSION } from '../constants.js';
 import { jwtDecode } from 'jwt-decode';
 import { Context } from './context.js';
 import consola from 'consola';
@@ -27,19 +27,32 @@ const onResponse: FetchHooks['onResponse'] = (context) => {
   }
 };
 
+/** API base URL by server region or custom URL */
+export function getAPIServerURL(server: ServerRegion | string): string {
+  if (server === ServerRegion.WORLD) {
+    return 'https://api.demoway.com';
+  }
+  if (server === ServerRegion.CHINA) {
+    return 'https://api.demoway.cn';
+  }
+  return server;
+}
+
+export function getOAuthOrigin(server: ServerRegion | string) {
+  if (server === ServerRegion.WORLD) {
+    return 'https://refore.ai';
+  }
+  if (server === ServerRegion.CHINA) {
+    return 'https://reforeai.cn';
+  }
+  return server;
+}
+
 export class APIClient {
   constructor(public readonly credential: ICredential & { name?: string }) {}
 
   private getBaseURL(server: ServerRegion | string) {
-    if (server === ServerRegion.WORLD) {
-      return 'https://api.demoway.com';
-    }
-
-    if (server === ServerRegion.CHINA) {
-      return 'https://api.demoway.cn';
-    }
-
-    return server;
+    return getAPIServerURL(server);
   }
 
   private async refreshAuthToken() {
@@ -79,14 +92,14 @@ export class APIClient {
       onRequest: async (context) => {
         const accessToken = await this.getAccessToken();
 
-        const headers = new Headers();
         context.options.query = {
           ...context.options.query,
-          client: 'uimap',
+          client: API_CLIENT_NAME,
           version: VERSION,
           appId: this.credential.appId,
         };
 
+        const headers = new Headers(context.options.headers);
         headers.set('Authorization', `Bearer ${accessToken}`);
         context.options.headers = headers;
       },
@@ -113,19 +126,27 @@ export class APIClient {
   }
 }
 
-export function getCurrentCredential() {
-  const envCredential = {
-    server: process.env.REFORE_SERVER,
-    apiKey: process.env.REFORE_API_KEY,
-    appId: process.env.REFORE_APP_ID,
-  };
+/** Public fetch for auth endpoints (no Authorization header) */
+export function createPublicAuthFetch(server: ServerRegion | string) {
+  const baseURL = getAPIServerURL(server);
+  return $fetch.create({
+    baseURL,
+    onRequest: async (context) => {
+      context.options.query = {
+        ...context.options.query,
+        client: API_CLIENT_NAME,
+        version: VERSION,
+      };
+    },
+    onResponse,
+  });
 }
 
 export function createCurrentCredentialAPI() {
   const envCredential = {
-    server: process.env.REFORE_SERVER,
-    apiKey: process.env.REFORE_API_KEY,
-    appId: process.env.REFORE_APP_ID,
+    server: process.env.UIMAP_SERVER,
+    apiKey: process.env.UIMAP_API_KEY,
+    appId: process.env.UIMAP_APP_ID,
   };
 
   if (envCredential.server && envCredential.apiKey && envCredential.appId) {
@@ -139,7 +160,7 @@ export function createCurrentCredentialAPI() {
   const credentialName = Context.credential ?? CredentialStore.get('default');
 
   if (!credentialName) {
-    throw new Error('No specified credential, please use --credential to specify a credential');
+    throw new Error('No available credential, please use "uimap login" to login first');
   }
 
   const credential = CredentialStore.get('credentials')?.[credentialName];

@@ -40,9 +40,9 @@ You will be prompted for:
 You can also set the credential by environment variables in your shell:
 
 ```bash
-export REFORE_SERVER=<China or World>
-export REFORE_API_KEY=<your_api_key>
-export REFORE_APP_ID=<your_app_id>
+export UIMAP_SERVER=<China or World>
+export UIMAP_API_KEY=<your_api_key>
+export UIMAP_APP_ID=<your_app_id>
 ```
 
 ### Install skills
@@ -74,9 +74,9 @@ Configure MCP server in your `mcp.json` file (for example in Cursor):
       "command": "npx",
       "args": ["-y", "@refore-ai/uimap", "mcp"],
       "env": {
-        "REFORE_SERVER": "<China or World>",
-        "REFORE_API_KEY": "<your_api_key>",
-        "REFORE_APP_ID": "<your_app_id>"
+        "UIMAP_SERVER": "<China or World>",
+        "UIMAP_API_KEY": "<your_api_key>",
+        "UIMAP_APP_ID": "<your_app_id>"
       }
     }
   }
