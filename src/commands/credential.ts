@@ -130,26 +130,24 @@ export const CredentialCommand = new Command('credential')
     new Command('status').description('Show the status of the current credential').action(async () => {
       const api = createCurrentCredentialAPI();
 
-      const result = await oraPromise(
-        async () => {
-          const available = await api.validateCredentials();
-          return { available };
-        },
-        { text: 'Getting credential status...' },
-      );
-
       consola.info(
-        `Current credential: ${chalk.cyan(api.credential.name)}\n` +
+        `Current credential:\n` +
           `  Server: ${chalk.cyan(api.credential.server)}\n` +
           `  API Key: ${chalk.cyan(truncate(api.credential.apiKey, { head: 8, tail: 4, omission: '******' }))}\n` +
           `  App ID: ${chalk.cyan(api.credential.appId)}`,
       );
 
-      if (result.available) {
-        consola.success('Credential is still valid.');
-      } else {
-        consola.error('Credential is no longer valid, please use "uimap credential add" to add a new credential.');
-      }
+      await oraPromise(
+        async () => {
+          const available = await api.validateCredentials();
+          return { available };
+        },
+        {
+          text: 'Getting credential status...',
+          successText: 'Credential is still valid.',
+          failText: 'Credential is no longer valid, please use "uimap login" to login again.',
+        },
+      );
     }),
   )
   .addCommand(
