@@ -90,15 +90,28 @@ uimap search "how to create a new project"
 uimap search "how to invite a team member" --domain example.com
 ```
 
-## Publish
+## Development And Testing For Local Agent
 
-This project uses [Changesets](https://github.com/changesets/changesets).
+1. add skills to local directory
 
 ```bash
-pnpm changeset   # Add a changeset
-pnpm version     # Apply version bumps
-pnpm release     # Publish (with changesets)
+uimap add-skill
 ```
+
+By default skills are installed to `./.agents/skills`. Use `-o` to override:
+
+```bash
+uimap add-skill -o /path/to/skills
+```
+
+2. link uimap to global bin
+
+```bash
+pnpm link
+uimap --version
+```
+
+3. test uimap in local agent tools
 
 ## License
 

@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "prepare": "husky",
-    "dev": "tsx src/cli.ts",
+    "dev": "UIMAP_ENABLE_CUSTOM_SERVER=true tsx src/cli.ts",
     "build": "tsdown",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",

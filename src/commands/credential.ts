@@ -5,14 +5,14 @@ import consola from 'consola';
 import { oraPromise } from 'ora';
 import chalk from 'chalk';
 import { truncate } from '../lib/string.js';
-import { ServerRegion } from '../types/enum.js';
+import { SERVER_CHOICES } from '../constants.js';
 
 async function promptNewCredential() {
   let { server } = await enquirer.prompt<{ server: string }>({
     type: 'select',
     name: 'server',
     message: 'Select a server region:',
-    choices: [ServerRegion.CHINA, ServerRegion.WORLD, 'Custom'],
+    choices: SERVER_CHOICES,
   });
 
   if (server === 'Custom') {

@@ -4,8 +4,7 @@ import { oraPromise } from 'ora';
 import waitFor from 'p-wait-for';
 import enquirer from 'enquirer';
 import { createPublicAuthFetch, getAPIServerURL, CredentialStore, getOAuthOrigin } from '../lib/index.js';
-import { OAUTH_CLIENT_ID } from '../constants.js';
-import { ServerRegion } from '../types/enum.js';
+import { OAUTH_CLIENT_ID, SERVER_CHOICES } from '../constants.js';
 
 interface OAuthResult {
   code: string;
@@ -17,7 +16,7 @@ export const LoginCommand = new Command('login').description('Login to UIMap via
     type: 'select',
     name: 'serverRegion',
     message: 'Select a server region:',
-    choices: [ServerRegion.CHINA, ServerRegion.WORLD, 'Custom'],
+    choices: SERVER_CHOICES,
   });
 
   let server: string;
