@@ -3,7 +3,7 @@ import { Command, CommanderError } from 'commander';
 import { CredentialCommand, McpCommand, AddSkillCommand } from './commands/index.js';
 
 import type { IGlobalOptions } from './types/index.js';
-import { checkSkillOutdated, Context } from './lib';
+import { Context } from './lib';
 import { VERSION } from './constants.js';
 import consola, { LogLevels } from 'consola';
 // import { WebToAiCommand } from './commands/web-to-ai.js';
@@ -18,14 +18,10 @@ const program = new Command()
   .option('--verbose', 'verbose output')
   .exitOverride()
   // set global context
-  .hook('preAction', (thisCommand, actionCommand) => {
+  .hook('preAction', (thisCommand) => {
     Context.credential = thisCommand.opts<IGlobalOptions>().credential;
     if (thisCommand.opts<IGlobalOptions>().verbose) {
       consola.level = LogLevels.verbose;
-    }
-    const actionName = actionCommand.name();
-    if (actionName !== 'add-skill' && actionName !== 'mcp') {
-      checkSkillOutdated();
     }
   })
   // register sub commands
