@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import type { SessionConfig, ICredential, CredentialConfig } from '../types/index.js';
 import { version as VERSION } from '../../package.json';
 
-const CONFIG_DIR = join(homedir(), '.refore-ai');
+const CONFIG_DIR = join(homedir(), '.uimap');
 
 const BASE_CONFIG: Options<any> = {
   cwd: CONFIG_DIR,
