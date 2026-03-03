@@ -92,7 +92,14 @@ uimap search "how to invite a team member" --domain example.com
 
 ## Development And Testing For Local Agent
 
-1. add skills to local directory
+1. link uimap to global bin
+
+```bash
+pnpm link
+uimap --version
+```
+
+2. add skills to local directory
 
 ```bash
 uimap add-skill
@@ -104,14 +111,14 @@ By default skills are installed to `./.agents/skills`. Use `-o` to override:
 uimap add-skill -o /path/to/skills
 ```
 
-2. link uimap to global bin
+3. login
 
 ```bash
-pnpm link
-uimap --version
+uimap login
+UIMAP_ENABLE_CUSTOM_SERVER=true uimap login # if you want to use custom server url and oauth origin
 ```
 
-3. test uimap in local agent tools
+4. test uimap in local agent tools
 
 ## License
 
