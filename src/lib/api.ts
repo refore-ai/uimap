@@ -40,10 +40,10 @@ export function getAPIServerURL(server: ServerRegion | string): string {
 
 export function getOAuthOrigin(server: ServerRegion | string) {
   if (server === ServerRegion.WORLD) {
-    return 'https://refore.ai';
+    return 'https://uimap.ai';
   }
   if (server === ServerRegion.CHINA) {
-    return 'https://reforeai.cn';
+    return 'https://uimap.reforeai.cn';
   }
   return server;
 }
