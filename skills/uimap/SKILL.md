@@ -1,6 +1,7 @@
 ---
 name: UIMap
-description: Understand user needs. If the task involves operations on a webpage, this SKILL provides the corresponding URL and step-by-step guidance. When you need to determine which webpage to open for a task, use this SKILL first — it can provide the accurate URL and the subsequent click operation path
+version: 0.1.3
+description: This skill provides the accurate URL and step-by-step click operation path for completing tasks on websites. If the task involves operations on a web app, use this skill first to determine which URL to open and what the subsequent click operation path should be.
 ---
 
 # UIMap CLI
@@ -23,7 +24,7 @@ uimap login
 
 ## search
 
-Search for step-by-step operation guides to complete tasks on websites. Use this when you need to know how to navigate or interact with a specific website.
+Search for step-by-step operation guides to complete tasks on websites. Use when the user needs to know how to navigate or interact with a specific website.
 
 ```bash
 # Find how to complete a task on a website
@@ -40,4 +41,4 @@ uimap search "how to create a new project in example.com"
 uimap search "how to invite a team member" --domain example.com
 ```
 
-The command returns operation instructions for you to complete the task.
+The command returns operation instructions to complete the task.
