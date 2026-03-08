@@ -144,7 +144,7 @@ export function createPublicAuthFetch(server: ServerRegion | string) {
 
 export function createCurrentCredentialAPI() {
   const envCredential = {
-    server: process.env.UIMAP_SERVER,
+    server: process.env.UIMAP_SERVER ?? ServerRegion.WORLD,
     apiKey: process.env.UIMAP_API_KEY,
     appId: process.env.UIMAP_APP_ID,
   };
