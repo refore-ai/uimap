@@ -1,6 +1,6 @@
 ---
 name: UIMap
-description: When you need to access a website to retrieve information or perform some action, use this SKILL first — it can provide the accurate URL and the subsequent click operation path
+description: Understand user needs. If the task involves operations on a webpage, this SKILL provides the corresponding URL and step-by-step guidance. When you need to determine which webpage to open for a task, use this SKILL first — it can provide the accurate URL and the subsequent click operation path
 ---
 
 # UIMap CLI

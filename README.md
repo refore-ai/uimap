@@ -1,12 +1,12 @@
 # UIMap CLI
 
-A command-line tool for [UIMap](https://uimap.ai). Manage API credentials, run MCP servers, and install agent skills.
+A command-line tool for [UIMap](https://uimap.ai). Manage API credentials, run MCP servers, and install agent skills efficiently.
 
 ## Features
 
-- **Login** — Login to UIMap via browser OAuth. Opens a browser window to complete authentication interactively
-- **MCP servers** — Provide MCP services for UIMap CLI commands
-- **Skills** — Install UIMap CLI skills into your agent environment
+- **Authentication** — Log in to UIMap via browser OAuth seamlessly.
+- **MCP Servers** — Run MCP services for UIMap CLI integration.
+- **Skill Management** — Easily install UIMap CLI skills into your agent environment.
 
 ## Installation
 
@@ -21,29 +21,41 @@ pnpm add -g @refore-ai/uimap
 yarn global add @refore-ai/uimap
 ```
 
-## Quick start
+## Quick Start
 
-### Install skills
+### Install UIMap Skill
 
-Install UIMap CLI skills into your agent skills directory (e.g. for Cursor):
+#### Standard Usage
+
+Use the following command to easily install the UIMap skill into various popular Agents:
+
+```bash
+npx skills add refore-ai/uimap
+```
+
+#### Advanced Usage
+
+Install UIMap CLI skills into a specific agent skills directory (e.g., for Cursor):
 
 ```bash
 uimap add-skill
 ```
 
-By default skills are installed to `./.agents/skills`. Use `-o` to override:
+By default, skills are installed to `./.agents/skills`. Use the `-o` flag to specify a custom output directory:
 
 ```bash
 uimap add-skill -o /path/to/skills
 ```
 
-### MCP servers
+### MCP Servers
+
+To run the MCP server:
 
 ```bash
 npx @refore-ai/uimap mcp
 ```
 
-Configure MCP server in your `mcp.json` file (for example in Cursor):
+Configure the MCP server in your `mcp.json` file (e.g., for Cursor):
 
 ```json
 {
@@ -60,7 +72,9 @@ Configure MCP server in your `mcp.json` file (for example in Cursor):
 }
 ```
 
-### Search UIMap
+### CLI Usage in Terminal
+
+You can also use the CLI directly in your terminal to search:
 
 ```bash
 uimap search "how to create a new project"
