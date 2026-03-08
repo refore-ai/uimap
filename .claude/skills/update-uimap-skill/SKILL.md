@@ -1,18 +1,19 @@
 ---
-name: update-refore-skill
-description: Update the skills/refore-cli documentation templates to match the latest CLI source code. Use when CLI commands, options, or behavior have changed and the bundled skill docs need to be synced.
+name: update-uimap-skill
+description: Update the skills/uimap documentation templates to match the latest CLI source code. Use when CLI commands, options, or behavior have changed and the bundled skill docs need to be synced.
+metadata:
+  internal: true
 ---
 
-# Update Refore CLI Skill Docs
+# Update UIMap Skill Docs
 
-When this skill is invoked, read the CLI source code and update `skills/refore-cli/SKILL.md` to accurately reflect the current commands, options, and behavior. Do the full update in one pass — read everything first, then write.
+When this skill is invoked, read the CLI source code and update `skills/uimap/SKILL.md` to accurately reflect the current commands, options, and behavior. Do the full update in one pass — read everything first, then write.
 
 ## Step 1: Read source files
 
 Read these files in parallel:
 
 - `src/cli.ts` — global options and registered commands
-- `src/commands/credential.ts` — all credential subcommands and their interactive prompts
 - `src/commands/uimap.ts` — arguments and options
 - `src/lib/api.ts` — `createCurrentCredentialAPI()` to identify environment variable support
 - `package.json` — package name for install command
@@ -21,17 +22,17 @@ Do not document `mcp` or `add-skill` — they are infrastructure commands, not e
 
 ## Step 2: Read current skill doc
 
-Read `skills/refore-cli/SKILL.md` to see what is currently documented.
+Read `skills/uimap/SKILL.md` to see what is currently documented.
 
-## Step 3: Update `skills/refore-cli/SKILL.md`
+## Step 3: Update `skills/uimap/SKILL.md`
 
 All documentation lives in a single file. Rewrite only what is missing, inaccurate, or outdated. Derive all command names, option names, default values, environment variable names, and interactive prompt details from the source — do not invent or assume them.
 
 ### File structure (keep this order)
 
-1. **YAML frontmatter** — `name` stays as-is; update `description` to reflect actual user-facing use cases, leading with the most commonly used features
-2. **Feature sections** — one H2 per user-facing command, ordered by usage frequency (most used first)
-3. **Installation** — minimal: one install command + external link
+1. **YAML frontmatter** — `name: UIMap`（保持此大小写）; update `description` to reflect actual user-facing use cases, leading with the most commonly used features
+2. **Installation** — minimal: one install command + external link; comes right after the H1 heading
+3. **Feature sections** — document only `login` and `search`; `login` comes before `search`; omit `credential`, global options, and environment variables
 
 ### Format conventions
 
@@ -56,7 +57,7 @@ All documentation lives in a single file. Rewrite only what is missing, inaccura
 
 ## Step 4: Sanity check
 
-Re-read `skills/refore-cli/SKILL.md` and confirm:
-1. Every subcommand and option present in source appears in the doc
+Re-read `skills/uimap/SKILL.md` and confirm:
+1. `login` and `search` commands are present and accurately described
 2. No doc entries reference commands or options removed from source
-3. All default values match the source schema exactly
+3. All option names and default values for `login` and `search` match the source exactly
