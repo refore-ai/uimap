@@ -6,8 +6,23 @@ export const API_CLIENT_NAME = 'uimap-cli';
 
 export const ENABLE_CUSTOM_SERVER = process.env.UIMAP_ENABLE_CUSTOM_SERVER === 'true';
 
-export const SERVER_CHOICES = ENABLE_CUSTOM_SERVER
-  ? [ServerRegion.WORLD, ServerRegion.CHINA, 'Custom']
-  : [ServerRegion.WORLD, ServerRegion.CHINA];
+// copy from enquirer type declaration
+interface EnquirerChoice {
+  name: string;
+  message?: string;
+  value?: unknown;
+  hint?: string;
+  role?: string;
+  enabled?: boolean;
+  disabled?: boolean | string;
+}
+
+const WORLD_CHOICE: EnquirerChoice = { name: ServerRegion.WORLD, message: 'World (uimap.ai)' };
+const CHINA_CHOICE: EnquirerChoice = { name: ServerRegion.CHINA, message: 'China (uimap.reforeai.cn)' };
+const CUSTOM_CHOICE: EnquirerChoice = { name: 'Custom' };
+
+export const SERVER_CHOICES: EnquirerChoice[] = ENABLE_CUSTOM_SERVER
+  ? [WORLD_CHOICE, CHINA_CHOICE, CUSTOM_CHOICE]
+  : [WORLD_CHOICE, CHINA_CHOICE];
 
 export const OAUTH_CLIENT_ID = '30es759Yuw';
