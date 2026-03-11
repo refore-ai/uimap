@@ -10,6 +10,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 DIST_DIR="$PROJECT_ROOT/dist"
 SKILLS_DIR="$PROJECT_ROOT/skills"
+UIMAP_SKILL_DIR="$SKILLS_DIR/uimap"
 RELEASES_DIR="$PROJECT_ROOT/releases"
 CDN_CONFIG_FILE="$PROJECT_ROOT/.cdn-config"
 
@@ -82,6 +83,19 @@ build_project() {
   log_success "Build completed"
 }
 
+# Create uimap skill zip
+create_skill_zip() {
+  log_info "Creating uimap skill zip..."
+  
+  local skill_zip="$RELEASES_DIR/uimap.zip"
+  
+  # Create zip from skills/uimap directory
+  cd "$SKILLS_DIR"
+  zip -r "$skill_zip" uimap/
+  
+  log_success "Skill zip created: $skill_zip"
+}
+
 # Create release package
 create_package() {
   local version="$1"
@@ -142,6 +156,7 @@ show_upload_instructions() {
   echo "  1. $RELEASES_DIR/install.sh -> $CDN_BASE_URL/install.sh"
   echo "  2. $RELEASES_DIR/uimap-$version.tar.gz -> $CDN_BASE_URL/releases/$version/uimap-$version.tar.gz"
   echo "  3. $RELEASES_DIR/uimap-latest.tar.gz -> $CDN_BASE_URL/releases/latest/uimap-latest.tar.gz"
+  echo "  4. $RELEASES_DIR/uimap.zip -> $CDN_BASE_URL/skills/uimap.zip"
   echo ""
   
   # Show upload commands if configured
@@ -156,6 +171,9 @@ show_upload_instructions() {
     echo ""
     echo "# Upload latest package"
     echo "$CDN_UPLOAD_CMD \"$RELEASES_DIR/uimap-latest.tar.gz\" \"${CDN_UPLOAD_URL%/}/releases/latest/uimap-latest.tar.gz\""
+    echo ""
+    echo "# Upload skill zip"
+    echo "$CDN_UPLOAD_CMD \"$RELEASES_DIR/uimap.zip\" \"${CDN_UPLOAD_URL%/}/skills/uimap.zip\""
   else
     log_warn "CDN_UPLOAD_CMD not configured, please upload manually"
     echo ""
@@ -218,6 +236,16 @@ upload_to_cdn() {
     return 1
   fi
   
+  # Upload skill zip
+  local skill_target="${upload_base%/}/skills/uimap.zip"
+  log_info "Uploading uimap.zip -> $skill_target"
+  if $CDN_UPLOAD_CMD "$RELEASES_DIR/uimap.zip" "$skill_target"; then
+    log_success "Skill zip uploaded successfully"
+  else
+    log_error "Skill zip upload failed"
+    return 1
+  fi
+  
   log_success "All files uploaded successfully!"
 }
 
@@ -227,13 +255,14 @@ refresh_cdn() {
   
   log_info "Refreshing CDN..."
   
-  # Build list of URLs to refresh (same 3 files as prefetch)
-  local urls_json="[\"${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz\",\"${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz\",\"${CDN_BASE_URL%/}/install.sh\"]"
+  # Build list of URLs to refresh
+  local urls_json="[\"${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz\",\"${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz\",\"${CDN_BASE_URL%/}/install.sh\",\"${CDN_BASE_URL%/}/skills/uimap.zip\"]"
   
-  log_info "URLs to refresh (3 total):"
+  log_info "URLs to refresh (4 total):"
   echo "${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz"
   echo "${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz"
   echo "${CDN_BASE_URL%/}/install.sh"
+  echo "${CDN_BASE_URL%/}/skills/uimap.zip"
   
   # Use tccli to refresh CDN URLs
   if command -v tccli >/dev/null 2>&1; then
@@ -263,13 +292,14 @@ prefetch_cdn() {
   # Build list of URLs to prefetch
   local urls_need_prefetch="${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz
 ${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz
-${CDN_BASE_URL%/}/install.sh"
+${CDN_BASE_URL%/}/install.sh
+${CDN_BASE_URL%/}/skills/uimap.zip"
   
-  log_info "URLs to prefetch (3 total):"
+  log_info "URLs to prefetch (4 total):"
   echo "$urls_need_prefetch"
   
   # Convert URL list to JSON array format
-  local urls_json="[\"${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz\",\"${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz\",\"${CDN_BASE_URL%/}/install.sh\"]"
+  local urls_json="[\"${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz\",\"${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz\",\"${CDN_BASE_URL%/}/install.sh\",\"${CDN_BASE_URL%/}/skills/uimap.zip\"]"
   
   log_info "Prefetching CDN..."
   if tccli cdn PushUrlsCache --Area global --Urls "$urls_json"; then
@@ -295,6 +325,7 @@ main() {
   check_dependencies
   build_project
   create_package "$version"
+  create_skill_zip
   generate_install_script
   
   # Try auto-upload

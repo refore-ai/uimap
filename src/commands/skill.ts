@@ -1,6 +1,7 @@
 import { Command, Option } from 'commander';
 import path from 'node:path';
 import fs, { existsSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { resolveFromPackageRoot } from '../lib/index.js';
 import consola from 'consola';
 
@@ -25,9 +26,13 @@ async function installSkill(skillName: string, targetDir: string) {
 
 export const AddSkillCommand = new Command('add-skill')
   .description('Add skills to local directory')
-  .addOption(new Option('-o, --output <directory>', 'Specify directory to install to').default('./.agents/skills'))
+  .addOption(
+    new Option('-o, --output <directory>', 'Specify directory to install to').default(
+      path.join(homedir(), '.agents/skills'),
+    ),
+  )
   .action(async (options: ISkillAddOptions) => {
-    const targetDir = path.resolve(process.cwd(), options.output);
+    const targetDir = path.resolve(options.output);
     await installSkill('uimap', targetDir);
 
     consola.success(
