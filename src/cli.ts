@@ -13,7 +13,7 @@ import { LoginCommand } from './commands/login.js';
 const program = new Command()
   .name('uimap')
   .description('A CLI for UIMap')
-  .version(VERSION)
+  .version(VERSION, '-v, --version, -V')
   .option('-c, --credential <credential>', 'use specific credential')
   .option('--verbose', 'verbose output')
   .exitOverride()

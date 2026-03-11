@@ -10,8 +10,10 @@ A command-line tool for [UIMap](https://uimap.ai). Manage API credentials, run M
 
 ## Installation
 
+### npm (Recommended)
+
 ```bash
-# npm (recommended)
+# npm
 npm install -g @refore-ai/uimap
 
 # pnpm
@@ -19,6 +21,31 @@ pnpm add -g @refore-ai/uimap
 
 # yarn
 yarn global add @refore-ai/uimap
+```
+
+### Shell Script (No npm required)
+
+If you have network issues accessing npm, you can install directly via shell script:
+
+```bash
+# Install latest version
+curl -fsSL https://your-cdn-url.com/uimap/install.sh | bash
+
+# Or specify version
+curl -fsSL https://your-cdn-url.com/uimap/install.sh | VERSION=0.1.3 bash
+
+# Using wget
+wget -qO- https://your-cdn-url.com/uimap/install.sh | bash
+```
+
+The install script will:
+1. Check Node.js 20+ environment
+2. Download uimap package from CDN
+3. Install to `~/.local/bin/uimap`
+
+**Uninstall:**
+```bash
+curl -fsSL https://your-cdn-url.com/uimap/install.sh | bash -s -- uninstall
 ```
 
 ## Quick Start

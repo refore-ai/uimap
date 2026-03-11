@@ -1,7 +1,7 @@
 ---
 name: UIMap
 version: 0.1.4
-description: This skill provides the accurate URL and step-by-step click operation path for completing tasks on websites. If the task involves operations on a web app, use this skill first to determine which URL to open and what the subsequent click operation path should be.
+description: Provides the accurate URL and step-by-step click operation path for completing tasks on websites. If the task involves operations on a web app, use this skill first to determine which URL to open and what the subsequent click operation path should be.
 ---
 
 # UIMap
@@ -31,8 +31,14 @@ The command returns operation instructions to complete the task.
 
 ### Install the CLI
 
+**Via npm:**
 ```bash
 npm install -g @refore-ai/uimap
+```
+
+**Via CDN (if npm is unavailable):**
+```bash
+curl -fsSL https://your-cdn-url.com/uimap/install.sh | bash
 ```
 
 See [@refore-ai/uimap on npm](https://www.npmjs.com/package/@refore-ai/uimap) for full installation options.
