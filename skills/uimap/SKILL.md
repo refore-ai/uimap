@@ -45,8 +45,14 @@ See [@refore-ai/uimap on npm](https://www.npmjs.com/package/@refore-ai/uimap) fo
 
 ### Login
 
-Login to UIMap via browser OAuth. Opens a browser window to complete authentication interactively. Prompts for server region selection.
+Login to UIMap via browser OAuth. Opens a browser window to complete authentication interactively.
 
+**Usage:**
 ```bash
-uimap login
+uimap login --region World
+uimap login --region China
 ```
+
+- `--region <World|China>` — Server region (required)
+
+**Note:** Always ask the user for their server region before running the login command. Do not use interactive mode.

@@ -1,3 +1,3 @@
 {
-  "**/*.{vue,ts,tsx,js,tsx}": "eslint",
+  "**/*.{vue,ts,tsx,js,tsx}": "eslint --fix",
 }
