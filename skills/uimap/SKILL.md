@@ -38,7 +38,7 @@ npm install -g @refore-ai/uimap
 
 **Via CDN (if npm is unavailable):**
 ```bash
-curl -fsSL https://your-cdn-url.com/uimap/install.sh | bash
+curl -fsSL https://s.dwimg.top/uimap-install/install.sh | bash
 ```
 
 See [@refore-ai/uimap on npm](https://www.npmjs.com/package/@refore-ai/uimap) for full installation options.
@@ -49,10 +49,13 @@ Login to UIMap via browser OAuth. Opens a browser window to complete authenticat
 
 **Usage:**
 ```bash
+uimap login
+```
+
+If you need to specify a region (defaults to World or the region set during installation):
+```bash
 uimap login --region World
 uimap login --region China
 ```
 
-- `--region <World|China>` — Server region (required)
-
-**Note:** Always ask the user for their server region before running the login command. Do not use interactive mode.
+- `--region <World|China>` — Server region (optional)

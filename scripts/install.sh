@@ -4,6 +4,9 @@ set -euo pipefail
 # uimap CLI Installation Script
 # Usage: curl -fsSL <CDN_URL>/install.sh | bash
 #   or:  wget -qO- <CDN_URL>/install.sh | bash
+#
+# Options:
+#   --region <World|China>  Set default server region (default: World)
 
 # Configuration
 BINARY_NAME="uimap"
@@ -11,6 +14,7 @@ VERSION="${VERSION:-latest}"
 CDN_BASE_URL="${CDN_BASE_URL:-https://your-cdn-url.com/uimap}"
 INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/bin}"
 UIMAP_HOME="${UIMAP_HOME:-$HOME/.uimap}"
+DEFAULT_REGION="${DEFAULT_REGION:-World}"
 
 # Color output
 RED='\033[0;31m'
@@ -116,8 +120,17 @@ install_nodejs() {
   fi
 }
 
+# Save default region config
+save_region_config() {
+  local region="$1"
+  log_info "Setting default region: $region"
+  mkdir -p "$UIMAP_HOME"
+  echo "$region" > "$UIMAP_HOME/.region"
+}
+
 # Install uimap
 install_uimap() {
+  local region="${1:-World}"
   local os=$(detect_os)
   local arch=$(detect_arch)
   
@@ -210,8 +223,15 @@ EOF
     log_success "uimap is working properly!"
   fi
   
+  # Save default region
+  save_region_config "$region"
+  
   echo ""
   log_info "Use 'uimap --help' to see available commands"
+  
+  # Add skill to agent
+  log_info "Adding uimap skill to agent..."
+  "$launcher" add-skill
 }
 
 # Uninstall uimap
@@ -233,11 +253,57 @@ uninstall_uimap() {
   log_success "uimap has been completely uninstalled"
 }
 
+# Parse arguments
+parse_args() {
+  REGION="$DEFAULT_REGION"
+  
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --region)
+        REGION="$2"
+        shift 2
+        ;;
+      --region=*)
+        REGION="${1#*=}"
+        shift
+        ;;
+      install|uninstall|--help|-h)
+        COMMAND="$1"
+        shift
+        ;;
+      *)
+        echo "Unknown option: $1"
+        echo "Use --help for usage information"
+        exit 1
+        ;;
+    esac
+  done
+}
+
 # Main function
 main() {
+  local REGION="$DEFAULT_REGION"
+  
+  # Parse arguments
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --region)
+        REGION="$2"
+        shift 2
+        ;;
+      --region=*)
+        REGION="${1#*=}"
+        shift
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+  
   case "${1:-install}" in
     install)
-      install_uimap
+      install_uimap "$REGION"
       ;;
     uninstall)
       uninstall_uimap

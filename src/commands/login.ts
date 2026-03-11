@@ -5,27 +5,49 @@ import waitFor from 'p-wait-for';
 import enquirer from 'enquirer';
 import { createPublicAuthFetch, getAPIServerURL, CredentialStore, getOAuthOrigin } from '../lib/index.js';
 import { OAUTH_CLIENT_ID, SERVER_CHOICES } from '../constants.js';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
+import { readFileSync, existsSync } from 'node:fs';
 
 interface OAuthResult {
   code: string;
   appId?: string;
 }
 
+// Read saved region from config file
+function getSavedRegion(): string | undefined {
+  const regionFile = join(homedir(), '.uimap', '.region');
+  if (existsSync(regionFile)) {
+    try {
+      return readFileSync(regionFile, 'utf-8').trim();
+    } catch {
+      return undefined;
+    }
+  }
+  return undefined;
+}
+
 export const LoginCommand = new Command('login')
   .description('Login to UIMap via browser OAuth')
-  .option('-r, --region <region>', 'Server region (World or China)', process.env.UIMAP_SERVER_REGION)
+  .option('-r, --region <region>', 'Server region (World or China)')
   .action(async (options: { region?: string }) => {
     let serverRegion: string;
 
-    // If region is specified via CLI or env var, use it directly
-    if (options.region) {
+    // Priority: CLI option > env var > saved config > interactive prompt
+    const regionFromCli = options.region;
+    const regionFromEnv = process.env.UIMAP_SERVER_REGION;
+    const regionFromFile = getSavedRegion();
+
+    const region = regionFromCli || regionFromEnv || regionFromFile;
+
+    if (region) {
       const validRegions = SERVER_CHOICES.map((c) => c.name);
-      if (!validRegions.includes(options.region)) {
-        console.error(`Invalid region: ${options.region}`);
+      if (!validRegions.includes(region)) {
+        console.error(`Invalid region: ${region}`);
         console.error(`Valid regions: ${validRegions.join(', ')}`);
         process.exit(1);
       }
-      serverRegion = options.region;
+      serverRegion = region;
     } else {
       // Otherwise, prompt user to select
       const result = await enquirer.prompt<{ serverRegion: string }>({
