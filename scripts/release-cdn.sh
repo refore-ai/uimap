@@ -143,6 +143,19 @@ generate_install_script() {
   log_success "Install script generated: $install_script"
 }
 
+# Generate install-cn script
+generate_install_cn_script() {
+  local install_cn_script="$RELEASES_DIR/install-cn.sh"
+  
+  log_info "Generating install-cn script..."
+  
+  # Copy install-cn.sh and update CDN URL
+  sed "s|CDN_URL=.*|CDN_URL=\"$CDN_BASE_URL\"|" "$SCRIPT_DIR/install-cn.sh" > "$install_cn_script"
+  chmod +x "$install_cn_script"
+  
+  log_success "Install-cn script generated: $install_cn_script"
+}
+
 # Show upload instructions
 show_upload_instructions() {
   local version="$1"
@@ -154,9 +167,10 @@ show_upload_instructions() {
   echo ""
   echo "Files to upload to CDN:"
   echo "  1. $RELEASES_DIR/install.sh -> $CDN_BASE_URL/install.sh"
-  echo "  2. $RELEASES_DIR/uimap-$version.tar.gz -> $CDN_BASE_URL/releases/$version/uimap-$version.tar.gz"
-  echo "  3. $RELEASES_DIR/uimap-latest.tar.gz -> $CDN_BASE_URL/releases/latest/uimap-latest.tar.gz"
-  echo "  4. $RELEASES_DIR/uimap.zip -> $CDN_BASE_URL/skills/uimap.zip"
+  echo "  2. $RELEASES_DIR/install-cn.sh -> $CDN_BASE_URL/install-cn.sh"
+  echo "  3. $RELEASES_DIR/uimap-$version.tar.gz -> $CDN_BASE_URL/releases/$version/uimap-$version.tar.gz"
+  echo "  4. $RELEASES_DIR/uimap-latest.tar.gz -> $CDN_BASE_URL/releases/latest/uimap-latest.tar.gz"
+  echo "  5. $RELEASES_DIR/uimap.zip -> $CDN_BASE_URL/skills/uimap.zip"
   echo ""
   
   # Show upload commands if configured
@@ -165,6 +179,9 @@ show_upload_instructions() {
     echo ""
     echo "# Upload install script"
     echo "$CDN_UPLOAD_CMD \"$RELEASES_DIR/install.sh\" \"${CDN_UPLOAD_URL%/}/install.sh\""
+    echo ""
+    echo "# Upload install-cn script"
+    echo "$CDN_UPLOAD_CMD \"$RELEASES_DIR/install-cn.sh\" \"${CDN_UPLOAD_URL%/}/install-cn.sh\""
     echo ""
     echo "# Upload version package"
     echo "$CDN_UPLOAD_CMD \"$RELEASES_DIR/uimap-$version.tar.gz\" \"${CDN_UPLOAD_URL%/}/releases/$version/uimap-$version.tar.gz\""
@@ -188,6 +205,9 @@ show_upload_instructions() {
   echo ""
   log_info "User installation command:"
   echo "  curl -fsSL $CDN_BASE_URL/install.sh | bash"
+  echo ""
+  log_info "China region installation command:"
+  echo "  curl -fsSL $CDN_BASE_URL/install-cn.sh | bash"
   echo ""
   echo "Or specify version:"
   echo "  VERSION=$version curl -fsSL $CDN_BASE_URL/install.sh | bash"
@@ -213,6 +233,16 @@ upload_to_cdn() {
     log_success "install.sh uploaded successfully"
   else
     log_error "install.sh upload failed"
+    return 1
+  fi
+  
+  # Upload install-cn script
+  local install_cn_target="${upload_base%/}/install-cn.sh"
+  log_info "Uploading install-cn.sh -> $install_cn_target"
+  if $CDN_UPLOAD_CMD "$RELEASES_DIR/install-cn.sh" "$install_cn_target"; then
+    log_success "install-cn.sh uploaded successfully"
+  else
+    log_error "install-cn.sh upload failed"
     return 1
   fi
   
@@ -256,12 +286,13 @@ refresh_cdn() {
   log_info "Refreshing CDN..."
   
   # Build list of URLs to refresh
-  local urls_json="[\"${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz\",\"${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz\",\"${CDN_BASE_URL%/}/install.sh\",\"${CDN_BASE_URL%/}/skills/uimap.zip\"]"
+  local urls_json="[\"${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz\",\"${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz\",\"${CDN_BASE_URL%/}/install.sh\",\"${CDN_BASE_URL%/}/install-cn.sh\",\"${CDN_BASE_URL%/}/skills/uimap.zip\"]"
   
-  log_info "URLs to refresh (4 total):"
+  log_info "URLs to refresh (5 total):"
   echo "${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz"
   echo "${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz"
   echo "${CDN_BASE_URL%/}/install.sh"
+  echo "${CDN_BASE_URL%/}/install-cn.sh"
   echo "${CDN_BASE_URL%/}/skills/uimap.zip"
   
   # Use tccli to refresh CDN URLs
@@ -293,13 +324,14 @@ prefetch_cdn() {
   local urls_need_prefetch="${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz
 ${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz
 ${CDN_BASE_URL%/}/install.sh
+${CDN_BASE_URL%/}/install-cn.sh
 ${CDN_BASE_URL%/}/skills/uimap.zip"
   
-  log_info "URLs to prefetch (4 total):"
+  log_info "URLs to prefetch (5 total):"
   echo "$urls_need_prefetch"
   
   # Convert URL list to JSON array format
-  local urls_json="[\"${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz\",\"${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz\",\"${CDN_BASE_URL%/}/install.sh\",\"${CDN_BASE_URL%/}/skills/uimap.zip\"]"
+  local urls_json="[\"${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz\",\"${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz\",\"${CDN_BASE_URL%/}/install.sh\",\"${CDN_BASE_URL%/}/install-cn.sh\",\"${CDN_BASE_URL%/}/skills/uimap.zip\"]"
   
   log_info "Prefetching CDN..."
   if tccli cdn PushUrlsCache --Area global --Urls "$urls_json"; then
@@ -327,6 +359,7 @@ main() {
   create_package "$version"
   create_skill_zip
   generate_install_script
+  generate_install_cn_script
   
   # Try auto-upload
   if upload_to_cdn "$version"; then
