@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command, CommanderError } from 'commander';
-import { CredentialCommand, McpCommand, AddSkillCommand } from './commands/index.js';
+import { CredentialCommand, McpCommand, AddSkillCommand, UpdateSkillsCommand } from './commands/index.js';
 
 import type { IGlobalOptions } from './types/index.js';
 import { Context } from './lib';
@@ -30,6 +30,7 @@ const program = new Command()
   .addCommand(LoginCommand)
   .addCommand(McpCommand)
   .addCommand(AddSkillCommand)
+  .addCommand(UpdateSkillsCommand)
   // process unknown command
   .on('command:*', (operands) => {
     console.error(`Unknown command: ${operands[0]}`);
