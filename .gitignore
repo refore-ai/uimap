@@ -55,4 +55,4 @@ mcp.json
 
 # CDN release
 releases/
-.cdn-config
+.cdn-config.worktrees/
