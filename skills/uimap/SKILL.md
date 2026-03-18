@@ -1,10 +1,10 @@
 ---
-name: UIMap
-version: 0.1.4
+name: uimap
+version: 0.1.9
 description: Provides the accurate URL and step-by-step click operation path for completing tasks on websites. If the task involves operations on a web app, use this skill first to determine which URL to open and what the subsequent click operation path should be.
 ---
 
-# UIMap
+# uimap
 
 ## search — Find step-by-step guides for any website task
 

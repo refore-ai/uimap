@@ -24,6 +24,7 @@ NC='\033[0m'
 
 log_info() { echo -e "${BLUE}[TEST]${NC} $1" >&2; }
 log_success() { echo -e "${GREEN}[PASS]${NC} $1" >&2; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $1" >&2; }
 log_error() { echo -e "${RED}[FAIL]${NC} $1" >&2; }
 
 # Cleanup function
@@ -42,6 +43,79 @@ stop_server() {
     log_info "Stopping server (PID: $pid)..."
     kill "$pid" 2>/dev/null || true
     rm -f "$SERVER_PID_FILE"
+  fi
+}
+
+# Remove uimap skill
+remove_skill() {
+  local skill_dir="$HOME/.agents/skills/uimap"
+  
+  if [ -d "$skill_dir" ]; then
+    log_info "Found uimap skill at: $skill_dir"
+    log_info "Removing skill..."
+    rm -rf "$skill_dir"
+    
+    if [ -d "$skill_dir" ]; then
+      log_warn "Failed to remove skill directory"
+    else
+      log_success "uimap skill removed"
+    fi
+  else
+    log_info "No uimap skill found at $skill_dir"
+  fi
+}
+
+# Uninstall existing uimap
+uninstall_existing() {
+  # First remove the skill
+  remove_skill
+  
+  if command -v uimap >/dev/null 2>&1; then
+    log_info "Found existing uimap installation at: $(which uimap)"
+    log_info "Uninstalling via npm..."
+    
+    # Try to uninstall and capture output
+    if npm uninstall -g uimap 2>&1; then
+      log_success "npm uninstall command executed"
+    else
+      log_warn "npm uninstall returned non-zero exit code"
+    fi
+    
+    # Also try to remove the binary directly if npm uninstall didn't work
+    local uimap_path
+    uimap_path=$(which uimap 2>/dev/null || echo "")
+    
+    if [ -n "$uimap_path" ]; then
+      log_warn "uimap binary still exists at: $uimap_path"
+      
+      # Check if it's a symlink or real file
+      if [ -L "$uimap_path" ]; then
+        log_info "It's a symlink, removing..."
+        rm -f "$uimap_path" 2>/dev/null || {
+          log_error "Failed to remove symlink, try: sudo rm $uimap_path"
+          exit 1
+        }
+      elif [ -f "$uimap_path" ]; then
+        log_info "It's a regular file, removing..."
+        rm -f "$uimap_path" 2>/dev/null || {
+          log_error "Failed to remove file, try: sudo rm $uimap_path"
+          exit 1
+        }
+      fi
+    fi
+    
+    # Verify uninstallation
+    if command -v uimap >/dev/null 2>&1; then
+      log_error "uimap is still installed after uninstall attempt"
+      log_info "Please uninstall manually:"
+      log_info "  npm uninstall -g uimap"
+      log_info "  or: sudo rm $(which uimap)"
+      exit 1
+    fi
+    
+    log_success "Existing uimap uninstalled"
+  else
+    log_info "No existing uimap installation found"
   fi
 }
 
@@ -74,42 +148,47 @@ start_server() {
 # Test installation
 test_install() {
   local port="${1:-$DEFAULT_PORT}"
-  local test_install_dir="$TEST_DIR/.local/bin"
   local test_uimap_home="$TEST_DIR/.uimap"
   
   log_info "Testing installation process..."
-  log_info "Install directory: $test_install_dir"
   log_info "Data directory: $test_uimap_home"
   
-  mkdir -p "$test_install_dir"
-  
-  # Use local server to test installation
+  # Use local server to test installation (install.sh downloads skill zip from here)
   local cdn_url="http://localhost:$port"
   
   log_info "Executing install script..."
   CDN_BASE_URL="$cdn_url" \
-  INSTALL_DIR="$test_install_dir" \
   UIMAP_HOME="$test_uimap_home" \
   bash "$RELEASES_DIR/install.sh"
   
   # Verify installation
-  if [ -f "$test_install_dir/uimap" ]; then
-    log_success "uimap command created"
+  if command -v uimap >/dev/null 2>&1; then
+    log_success "uimap command is available in PATH"
   else
-    log_error "uimap command not created"
-    return 1
+    log_warn "uimap command not found in PATH (may need to restart shell or add npm global bin to PATH)"
   fi
   
-  if [ -d "$test_uimap_home/dist" ]; then
+  # Verify data directory
+  if [ -d "$test_uimap_home" ]; then
     log_success "Data directory created"
   else
-    log_error "Data directory not created"
-    return 1
+    log_info "Data directory not created (will be created on first run)"
+  fi
+  
+  # Check region config
+  if [ -f "$test_uimap_home/.region" ]; then
+    local region
+    region=$(cat "$test_uimap_home/.region")
+    if [ "$region" = "China" ]; then
+      log_success "Region config set to China"
+    else
+      log_warn "Region config is '$region', expected 'China'"
+    fi
   fi
   
   # Test run
   log_info "Testing uimap execution..."
-  if "$test_install_dir/uimap" --help >/dev/null 2>&1; then
+  if uimap --help >/dev/null 2>&1; then
     log_success "uimap runs normally"
   else
     # Some commands may return non-zero, but as long as there's no error
@@ -122,6 +201,19 @@ test_install() {
 # Main function
 main() {
   local port="${1:-$DEFAULT_PORT}"
+  
+  log_info "=== uimap Installation Script Test ==="
+  echo ""
+  
+  # Check release files
+  if [ ! -f "$RELEASES_DIR/install.sh" ]; then
+    log_error "Release files not found, please run: pnpm run release:cdn"
+    exit 1
+  fi
+  
+  # Uninstall existing uimap first
+  uninstall_existing
+  echo ""
   
   # Create temp directory
   TEST_DIR=$(mktemp -d)
@@ -136,15 +228,6 @@ main() {
     exit $exit_code
   }
   trap cleanup_all EXIT
-  
-  log_info "=== uimap Installation Script Test ==="
-  echo ""
-  
-  # Check release files
-  if [ ! -f "$RELEASES_DIR/install.sh" ]; then
-    log_error "Release files not found, please run: pnpm run release:cdn"
-    exit 1
-  fi
   
   # Start server
   local server_pid
