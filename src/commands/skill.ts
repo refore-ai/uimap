@@ -53,7 +53,7 @@ async function prepareSkillDir(skillId: string) {
   );
 
   await guard(() =>
-    api.fetch(`/api/uimap/skill-marketplace/${skillId}/download`, {
+    api.fetch(`/api/uimap/skill-marketplace/${skillId}/record-download`, {
       method: 'POST',
     }),
   );
