@@ -10,12 +10,12 @@ export default {
     {
       rules: {
         'type-chore-disallow-src': ({ type }) => {
-          // 如果 type 不是 chore，则通过
+          // If type is not chore, pass
           if (type !== 'chore') {
             return [true];
           }
 
-          // 获取当前提交涉及的文件
+          // Get files involved in the current commit
           const files = execSync('git --no-pager diff --cached --name-only --diff-filter=ACMR', {
             encoding: 'utf-8',
           })
@@ -23,7 +23,7 @@ export default {
             .split('\n')
             .filter(Boolean);
 
-          // 检查是否包含 src 目录下的文件
+          // Check if it contains files in the src directory
           const hasSrcFiles = files.some((file) => file.includes('/src/'));
 
           if (hasSrcFiles) {

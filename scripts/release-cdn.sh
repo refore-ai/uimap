@@ -96,64 +96,18 @@ create_skill_zip() {
   log_success "Skill zip created: $skill_zip"
 }
 
-# Create release package
-create_package() {
-  local version="$1"
-  local release_dir="$RELEASES_DIR/$version"
-  local tarball="$RELEASES_DIR/uimap-$version.tar.gz"
-  
-  log_info "Creating release package v$version..."
-  
-  # Create release directory
-  rm -rf "$release_dir"
-  mkdir -p "$release_dir"
-  
-  # Copy required files
-  cp -r "$DIST_DIR" "$release_dir/"
-  cp -r "$SKILLS_DIR" "$release_dir/"
-  
-  # Copy metadata
-  cp "$PROJECT_ROOT/package.json" "$release_dir/"
-  cp "$PROJECT_ROOT/README.md" "$release_dir/" 2>/dev/null || true
-  cp "$PROJECT_ROOT/LICENSE" "$release_dir/" 2>/dev/null || true
-  
-  # Create version file
-  echo "{\"version\": \"$version\", \"date\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"}" > "$release_dir/version.json"
-  
-  # Package
-  cd "$RELEASES_DIR"
-  tar -czf "uimap-$version.tar.gz" -C "$release_dir" .
-  
-  # Also create latest version
-  cp "uimap-$version.tar.gz" "uimap-latest.tar.gz"
-  
-  log_success "Release package created: $tarball"
-}
-
 # Generate install script
 generate_install_script() {
+  local version="$1"
   local install_script="$RELEASES_DIR/install.sh"
   
   log_info "Generating install script..."
   
-  # Copy and update CDN URL in install script
-  sed "s|CDN_BASE_URL=.*|CDN_BASE_URL=\"$CDN_BASE_URL\"|" "$SCRIPT_DIR/install.sh" > "$install_script"
+  # Copy and update VERSION in install script
+  sed -e "s|VERSION=""".*"""""|VERSION="$version"|" "$SCRIPT_DIR/install.sh" > "$install_script"
   chmod +x "$install_script"
   
   log_success "Install script generated: $install_script"
-}
-
-# Generate install-cn script
-generate_install_cn_script() {
-  local install_cn_script="$RELEASES_DIR/install-cn.sh"
-  
-  log_info "Generating install-cn script..."
-  
-  # Copy install-cn.sh and update CDN URL
-  sed "s|CDN_URL=.*|CDN_URL=\"$CDN_BASE_URL\"|" "$SCRIPT_DIR/install-cn.sh" > "$install_cn_script"
-  chmod +x "$install_cn_script"
-  
-  log_success "Install-cn script generated: $install_cn_script"
 }
 
 # Show upload instructions
@@ -167,10 +121,7 @@ show_upload_instructions() {
   echo ""
   echo "Files to upload to CDN:"
   echo "  1. $RELEASES_DIR/install.sh -> $CDN_BASE_URL/install.sh"
-  echo "  2. $RELEASES_DIR/install-cn.sh -> $CDN_BASE_URL/install-cn.sh"
-  echo "  3. $RELEASES_DIR/uimap-$version.tar.gz -> $CDN_BASE_URL/releases/$version/uimap-$version.tar.gz"
-  echo "  4. $RELEASES_DIR/uimap-latest.tar.gz -> $CDN_BASE_URL/releases/latest/uimap-latest.tar.gz"
-  echo "  5. $RELEASES_DIR/uimap.zip -> $CDN_BASE_URL/skills/uimap.zip"
+  echo "  2. $RELEASES_DIR/uimap.zip -> $CDN_BASE_URL/skills/uimap.zip"
   echo ""
   
   # Show upload commands if configured
@@ -179,15 +130,6 @@ show_upload_instructions() {
     echo ""
     echo "# Upload install script"
     echo "$CDN_UPLOAD_CMD \"$RELEASES_DIR/install.sh\" \"${CDN_UPLOAD_URL%/}/install.sh\""
-    echo ""
-    echo "# Upload install-cn script"
-    echo "$CDN_UPLOAD_CMD \"$RELEASES_DIR/install-cn.sh\" \"${CDN_UPLOAD_URL%/}/install-cn.sh\""
-    echo ""
-    echo "# Upload version package"
-    echo "$CDN_UPLOAD_CMD \"$RELEASES_DIR/uimap-$version.tar.gz\" \"${CDN_UPLOAD_URL%/}/releases/$version/uimap-$version.tar.gz\""
-    echo ""
-    echo "# Upload latest package"
-    echo "$CDN_UPLOAD_CMD \"$RELEASES_DIR/uimap-latest.tar.gz\" \"${CDN_UPLOAD_URL%/}/releases/latest/uimap-latest.tar.gz\""
     echo ""
     echo "# Upload skill zip"
     echo "$CDN_UPLOAD_CMD \"$RELEASES_DIR/uimap.zip\" \"${CDN_UPLOAD_URL%/}/skills/uimap.zip\""
@@ -205,12 +147,6 @@ show_upload_instructions() {
   echo ""
   log_info "User installation command:"
   echo "  curl -fsSL $CDN_BASE_URL/install.sh | bash"
-  echo ""
-  log_info "China region installation command:"
-  echo "  curl -fsSL $CDN_BASE_URL/install-cn.sh | bash"
-  echo ""
-  echo "Or specify version:"
-  echo "  VERSION=$version curl -fsSL $CDN_BASE_URL/install.sh | bash"
   echo ""
 }
 
@@ -236,36 +172,6 @@ upload_to_cdn() {
     return 1
   fi
   
-  # Upload install-cn script
-  local install_cn_target="${upload_base%/}/install-cn.sh"
-  log_info "Uploading install-cn.sh -> $install_cn_target"
-  if $CDN_UPLOAD_CMD "$RELEASES_DIR/install-cn.sh" "$install_cn_target"; then
-    log_success "install-cn.sh uploaded successfully"
-  else
-    log_error "install-cn.sh upload failed"
-    return 1
-  fi
-  
-  # Upload version package
-  local version_target="${upload_base%/}/releases/$version/uimap-$version.tar.gz"
-  log_info "Uploading uimap-$version.tar.gz -> $version_target"
-  if $CDN_UPLOAD_CMD "$RELEASES_DIR/uimap-$version.tar.gz" "$version_target"; then
-    log_success "Version package uploaded successfully"
-  else
-    log_error "Version package upload failed"
-    return 1
-  fi
-  
-  # Upload latest package
-  local latest_target="${upload_base%/}/releases/latest/uimap-latest.tar.gz"
-  log_info "Uploading uimap-latest.tar.gz -> $latest_target"
-  if $CDN_UPLOAD_CMD "$RELEASES_DIR/uimap-latest.tar.gz" "$latest_target"; then
-    log_success "Latest package uploaded successfully"
-  else
-    log_error "Latest package upload failed"
-    return 1
-  fi
-  
   # Upload skill zip
   local skill_target="${upload_base%/}/skills/uimap.zip"
   log_info "Uploading uimap.zip -> $skill_target"
@@ -286,13 +192,10 @@ refresh_cdn() {
   log_info "Refreshing CDN..."
   
   # Build list of URLs to refresh
-  local urls_json="[\"${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz\",\"${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz\",\"${CDN_BASE_URL%/}/install.sh\",\"${CDN_BASE_URL%/}/install-cn.sh\",\"${CDN_BASE_URL%/}/skills/uimap.zip\"]"
+  local urls_json="[\"${CDN_BASE_URL%/}/install.sh\",\"${CDN_BASE_URL%/}/skills/uimap.zip\"]"
   
-  log_info "URLs to refresh (5 total):"
-  echo "${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz"
-  echo "${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz"
+  log_info "URLs to refresh (2 total):"
   echo "${CDN_BASE_URL%/}/install.sh"
-  echo "${CDN_BASE_URL%/}/install-cn.sh"
   echo "${CDN_BASE_URL%/}/skills/uimap.zip"
   
   # Use tccli to refresh CDN URLs
@@ -321,17 +224,11 @@ prefetch_cdn() {
   fi
   
   # Build list of URLs to prefetch
-  local urls_need_prefetch="${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz
-${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz
-${CDN_BASE_URL%/}/install.sh
-${CDN_BASE_URL%/}/install-cn.sh
-${CDN_BASE_URL%/}/skills/uimap.zip"
+  local urls_json="[\"${CDN_BASE_URL%/}/install.sh\",\"${CDN_BASE_URL%/}/skills/uimap.zip\"]"
   
-  log_info "URLs to prefetch (5 total):"
-  echo "$urls_need_prefetch"
-  
-  # Convert URL list to JSON array format
-  local urls_json="[\"${CDN_BASE_URL%/}/releases/$version/uimap-$version.tar.gz\",\"${CDN_BASE_URL%/}/releases/latest/uimap-latest.tar.gz\",\"${CDN_BASE_URL%/}/install.sh\",\"${CDN_BASE_URL%/}/install-cn.sh\",\"${CDN_BASE_URL%/}/skills/uimap.zip\"]"
+  log_info "URLs to prefetch (2 total):"
+  echo "${CDN_BASE_URL%/}/install.sh"
+  echo "${CDN_BASE_URL%/}/skills/uimap.zip"
   
   log_info "Prefetching CDN..."
   if tccli cdn PushUrlsCache --Area global --Urls "$urls_json"; then
@@ -339,6 +236,37 @@ ${CDN_BASE_URL%/}/skills/uimap.zip"
   else
     log_warn "CDN prefetch failed"
     log_warn "If tccli token is invalid, run: tccli auth login"
+  fi
+}
+
+# Check if version is already published on npm
+check_npm_version() {
+  local version="$1"
+  
+  log_info "Checking npm registry for existing version..."
+  
+  local npm_version
+  npm_version=$(npm view uimap version 2>/dev/null || echo "")
+  
+  if [ -n "$npm_version" ]; then
+    log_info "Latest published version on npm: v$npm_version"
+    
+    if [ "$npm_version" = "$version" ]; then
+      log_success "Version v$version is already published on npm"
+    else
+      log_warn "Version mismatch: npm has v$npm_version, but local is v$version"
+      log_info "Run 'npm publish' first to publish v$version to npm"
+    fi
+  else
+    log_warn "Could not check npm registry"
+  fi
+  
+  echo ""
+  read -p "Continue with CDN release? (y/N): " -n 1 -r
+  echo ""
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    log_info "Release cancelled by user"
+    exit 0
   fi
 }
 
@@ -353,13 +281,15 @@ main() {
   fi
   
   log_info "Preparing release uimap v$version"
+  echo ""
+  
+  # Check npm version and prompt user
+  check_npm_version "$version"
   
   check_dependencies
   build_project
-  create_package "$version"
   create_skill_zip
-  generate_install_script
-  generate_install_cn_script
+  generate_install_script "$version"
   
   # Try auto-upload
   if upload_to_cdn "$version"; then
