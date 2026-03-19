@@ -1,4 +1,4 @@
-import type { FetchHooks, FetchOptions } from 'ofetch';
+import type { $Fetch, FetchHooks } from 'ofetch';
 import { $fetch, ofetch } from 'ofetch';
 import { SessionStore, CredentialStore, getSessionKey } from './config.js';
 import type { ICredential } from '../types/index.js';
@@ -49,7 +49,28 @@ export function getOAuthOrigin(server: ServerRegion | string) {
 }
 
 export class APIClient {
-  constructor(public readonly credential: ICredential & { name?: string }) {}
+  public $fetch: $Fetch;
+
+  constructor(public readonly credential: ICredential & { name?: string }) {
+    this.$fetch = $fetch.create({
+      baseURL: this.getBaseURL(this.credential.server),
+      onRequest: async (context) => {
+        const accessToken = await this.getAccessToken();
+
+        context.options.query = {
+          ...context.options.query,
+          client: API_CLIENT_NAME,
+          version: VERSION,
+          appId: this.credential.appId,
+        };
+
+        const headers = new Headers(context.options.headers);
+        headers.set('Authorization', `Bearer ${accessToken}`);
+        context.options.headers = headers;
+      },
+      onResponse,
+    });
+  }
 
   private getBaseURL(server: ServerRegion | string) {
     return getAPIServerURL(server);
@@ -86,27 +107,6 @@ export class APIClient {
     return accessToken;
   }
 
-  private getFetchOptions(): FetchOptions<'json'> {
-    return {
-      baseURL: this.getBaseURL(this.credential.server),
-      onRequest: async (context) => {
-        const accessToken = await this.getAccessToken();
-
-        context.options.query = {
-          ...context.options.query,
-          client: API_CLIENT_NAME,
-          version: VERSION,
-          appId: this.credential.appId,
-        };
-
-        const headers = new Headers(context.options.headers);
-        headers.set('Authorization', `Bearer ${accessToken}`);
-        context.options.headers = headers;
-      },
-      onResponse,
-    };
-  }
-
   async validateCredentials() {
     try {
       await this.refreshAuthToken();
@@ -115,14 +115,6 @@ export class APIClient {
       consola.debug('validateCredentials error', error);
       return false;
     }
-  }
-
-  async fetch<T>(path: string, options?: FetchOptions<'json'>): Promise<T> {
-    const data = await $fetch<T>(path, {
-      ...this.getFetchOptions(),
-      ...options,
-    });
-    return data;
   }
 }
 

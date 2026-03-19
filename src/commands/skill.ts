@@ -2,63 +2,40 @@ import { Argument, Command, Option } from 'commander';
 import path from 'node:path';
 import fs from 'node:fs';
 import { tmpdir } from 'node:os';
-import { pinyin } from 'pinyin-pro';
 import { execSync } from 'node:child_process';
 import { resolveFromPackageRoot, createCurrentCredentialAPI } from '../lib/index.js';
-import { guard } from 'radashi';
+import AdmZip from 'adm-zip';
+import consola from 'consola';
 
 interface IAddSkillOptions {
   useSkillsAdd: boolean;
   output: string;
 }
 
-interface UIMapSkill {
-  id: string;
-  name: string;
-  description: string;
-  content: string;
-  domain: string;
-  contentUpdatedAt: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 const BUILTIN_SKILLS_DIR = resolveFromPackageRoot('skills');
 
 async function prepareSkillDir(skillId: string) {
   const api = createCurrentCredentialAPI();
-  const skill = await api.fetch<UIMapSkill>(`/api/uimap/skill-marketplace/${skillId}`);
-  const folderName = pinyin(skill.name, {
-    type: 'string',
-    toneType: 'none',
-    nonZh: 'consecutive',
-  })
-    .replaceAll(/\s+/g, '-')
-    .toLowerCase();
 
-  const tmpSkillDir = path.join(tmpdir(), folderName);
+  // Download and extract zip from marketplace endpoint.
+  const zipArrayBuffer = await api.$fetch('/api/uimap/skill-marketplace/download', {
+    query: {
+      skillIds: [skillId],
+    },
+    responseType: 'arrayBuffer',
+  });
 
   // Write files
+  const tmpSkillDir = path.join(tmpdir(), `uimap-skill-${skillId}`);
+  fs.rmSync(tmpSkillDir, { recursive: true, force: true });
   fs.mkdirSync(tmpSkillDir, { recursive: true });
+  const zip = new AdmZip(Buffer.from(zipArrayBuffer));
+  zip.extractAllTo(tmpSkillDir, true);
 
-  const skillMDContent = [`---`, `name: ${skill.name}`, `description: ${skill.description}`, `---`, skill.content].join(
-    '\n',
-  );
-
-  fs.writeFileSync(path.join(tmpSkillDir, 'SKILL.md'), skillMDContent, 'utf-8');
-  fs.writeFileSync(
-    path.join(tmpSkillDir, 'uimap-meta.json'),
-    JSON.stringify({ id: skill.id, contentUpdatedAt: skill.contentUpdatedAt }, null, 2),
-    'utf-8',
-  );
-
-  await guard(() =>
-    api.fetch(`/api/uimap/skill-marketplace/${skillId}/record-download`, {
-      method: 'POST',
-    }),
-  );
-
-  return tmpSkillDir;
+  return {
+    dir: tmpSkillDir,
+    skills: zip.getEntries().map((entry) => entry.entryName),
+  };
 }
 
 export const AddSkillCommand = new Command('add-skill')
@@ -66,19 +43,23 @@ export const AddSkillCommand = new Command('add-skill')
   .addArgument(
     new Argument('[skillId]', 'skillId to install from Marketplace, or omit to install built-in UIMap CLI skill'),
   )
-  .addOption(new Option('--no-use-skills-add', 'no use `npx skills add` command to add skills to agent').default(false))
+  .addOption(new Option('--no-use-skills-add', 'no use `npx skills add` command to add skills to agent'))
   .addOption(
     new Option('-o, --output <output>', 'output directory, only effect when --no-use-skills-add enabled').default(
-      './.agents/skills',
+      '.agents/skills',
     ),
   )
   .action(async (skillId: string | undefined, options: IAddSkillOptions) => {
     let skillDir: string;
+    let skills: string[];
 
     if (skillId) {
-      skillDir = await prepareSkillDir(skillId);
+      const prepared = await prepareSkillDir(skillId);
+      skillDir = prepared.dir;
+      skills = prepared.skills;
     } else {
-      skillDir = path.join(BUILTIN_SKILLS_DIR, 'uimap');
+      skillDir = BUILTIN_SKILLS_DIR;
+      skills = ['uimap'];
     }
 
     if (options.useSkillsAdd) {
@@ -86,6 +67,9 @@ export const AddSkillCommand = new Command('add-skill')
         stdio: 'inherit',
       });
     } else {
-      fs.cpSync(skillDir, path.join(options.output, path.basename(skillDir)), { recursive: true, force: true });
+      for (const skill of skills) {
+        fs.cpSync(path.join(skillDir, skill), path.join(options.output, skill), { recursive: true, force: true });
+      }
+      consola.success(`${skills.length} skills have been added to ${options.output}`);
     }
   });
