@@ -75,7 +75,7 @@ uninstall_existing() {
     log_info "Uninstalling via npm..."
     
     # Try to uninstall and capture output
-    if npm uninstall -g uimap 2>&1; then
+    if npm uninstall -g @refore-ai/uimap 2>&1; then
       log_success "npm uninstall command executed"
     else
       log_warn "npm uninstall returned non-zero exit code"
@@ -108,7 +108,7 @@ uninstall_existing() {
     if command -v uimap >/dev/null 2>&1; then
       log_error "uimap is still installed after uninstall attempt"
       log_info "Please uninstall manually:"
-      log_info "  npm uninstall -g uimap"
+      log_info "  npm uninstall -g @refore-ai/uimap"
       log_info "  or: sudo rm $(which uimap)"
       exit 1
     fi

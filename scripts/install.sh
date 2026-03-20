@@ -76,9 +76,9 @@ install_uimap() {
   fi
   
   # Install uimap globally with specified registry
-  local npm_package="uimap"
+  local npm_package="@refore-ai/uimap"
   if [ "$VERSION" != "latest" ]; then
-    npm_package="uimap@$VERSION"
+    npm_package="@refore-ai/uimap@$VERSION"
   fi
   
   log_info "Running: npm install -g $npm_package"
