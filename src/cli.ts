@@ -4,7 +4,7 @@ import { CredentialCommand, McpCommand, AddSkillCommand } from './commands/index
 
 import type { IGlobalOptions } from './types/index.js';
 import { Context } from './lib';
-import { VERSION } from './constants.js';
+import { IS_DEVELOPMENT, VERSION } from './constants.js';
 import consola, { LogLevels } from 'consola';
 // import { WebToAiCommand } from './commands/web-to-ai.js';
 import { SearchCommand } from './commands/uimap.js';
@@ -25,7 +25,7 @@ const program = new Command()
     }
   })
   // register sub commands
-  .addCommand(CredentialCommand)
+  .addCommand(CredentialCommand, { hidden: !IS_DEVELOPMENT })
   .addCommand(SearchCommand)
   .addCommand(LoginCommand)
   .addCommand(McpCommand)

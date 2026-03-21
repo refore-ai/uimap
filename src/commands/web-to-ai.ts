@@ -29,7 +29,7 @@ export interface IWebToAiRecord {
 }
 
 export async function fetchWebToAiRecord(api: APIClient, params: IWebToAiParams) {
-  return api.fetch<IWebToAiRecord>('/api/web-to-ai/record-by-url', {
+  return api.$fetch<IWebToAiRecord>('/api/web-to-ai/record-by-url', {
     method: 'POST',
     body: {
       url: params.url,
