@@ -87,6 +87,9 @@ build_project() {
 create_skill_zip() {
   log_info "Creating uimap skill zip..."
   
+  # Ensure releases directory exists
+  mkdir -p "$RELEASES_DIR"
+  
   local skill_zip="$RELEASES_DIR/uimap.zip"
   
   # Create zip from skills/uimap directory
