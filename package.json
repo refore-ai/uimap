@@ -20,7 +20,7 @@
     "lint": "eslint src",
     "clean": "rm -rf dist releases",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "release": "release-it && pnpm run release:cdn",
+    "release": "release-it",
     "release:cdn": "./scripts/release-cdn.sh"
   },
   "keywords": [
