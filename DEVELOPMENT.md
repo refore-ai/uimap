@@ -1,4 +1,3 @@
-
 # DEVELOPMENT
 
 ## Development And Testing For Local Agent
@@ -26,11 +25,10 @@ uimap add-skill -o /path/to/skills
 
 ```bash
 uimap login
-UIMAP_ENABLE_CUSTOM_SERVER=true uimap login # if you want to use custom server url and oauth origin
+UIMAP_DEVELOPMENT=true uimap login # if you want to use custom server url and oauth origin
 ```
 
 4. test uimap in local agent tools
-
 
 ## Managing multiple credentials
 
@@ -76,6 +74,7 @@ CDN_UPLOAD_CMD="coscli cp"                                         # Upload comm
 ```
 
 **Configuration Notes:**
+
 - `CDN_BASE_URL`: URL used by users to download files (HTTP/HTTPS)
 - `CDN_UPLOAD_URL`: Actual upload address to storage (e.g., `cos://`, `oss://`, `s3://`)
 - `CDN_UPLOAD_CMD`: Upload command tool (e.g., `coscli cp`, `ossutil cp`, `aws s3 cp`)
@@ -91,6 +90,7 @@ pnpm run release:cdn
 ```
 
 The script will:
+
 1. Build project (`pnpm run build`)
 2. Package `dist/`, `skills/` and other necessary files
 3. Generate install script (auto-inject CDN URL)

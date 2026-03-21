@@ -4,7 +4,7 @@ export { version as VERSION, name as PACKAGE_NAME } from '../package.json';
 
 export const API_CLIENT_NAME = 'uimap-cli';
 
-export const ENABLE_CUSTOM_SERVER = process.env.UIMAP_ENABLE_CUSTOM_SERVER === 'true';
+export const IS_DEVELOPMENT = process.env.UIMAP_DEVELOPMENT === 'true';
 
 // copy from enquirer type declaration
 interface EnquirerChoice {
@@ -21,7 +21,7 @@ const WORLD_CHOICE: EnquirerChoice = { name: ServerRegion.WORLD, message: 'World
 const CHINA_CHOICE: EnquirerChoice = { name: ServerRegion.CHINA, message: 'China (uimap.reforeai.cn)' };
 const CUSTOM_CHOICE: EnquirerChoice = { name: 'Custom' };
 
-export const SERVER_CHOICES: EnquirerChoice[] = ENABLE_CUSTOM_SERVER
+export const SERVER_CHOICES: EnquirerChoice[] = IS_DEVELOPMENT
   ? [WORLD_CHOICE, CHINA_CHOICE, CUSTOM_CHOICE]
   : [WORLD_CHOICE, CHINA_CHOICE];
 

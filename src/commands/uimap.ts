@@ -13,7 +13,7 @@ export const SEARCH_UIMAP_PARAMS_SCHEMA = z.object({
 export type ISearchUIMapGuideParams = z.infer<typeof SEARCH_UIMAP_PARAMS_SCHEMA>;
 
 export async function searchUIMapGuide(api: APIClient, params: ISearchUIMapGuideParams) {
-  return api.fetch<{ instruction: string }>('/api/uimap/search-guide', {
+  return api.$fetch<{ instruction: string }>('/api/uimap/search-guide', {
     method: 'POST',
     body: params,
   });

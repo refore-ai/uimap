@@ -87,8 +87,8 @@ export const CredentialCommand = new Command('credential')
         },
       );
 
-      const profile = await api.fetch<{ nickName: string }>('/api/admin-user/profile/v2');
-      const application = await api.fetch<{ name: string }>('/api/admin-user/application');
+      const profile = await api.$fetch<{ nickName: string }>('/api/admin-user/profile/v2');
+      const application = await api.$fetch<{ name: string }>('/api/admin-user/application');
 
       const { credentialName } = await enquirer.prompt<{ credentialName: string }>({
         type: 'input',
