@@ -52,8 +52,8 @@ temp/
 .claude/skills/uimap
 mcp.json
 .playwright-cli/
+.worktrees/
 
 # CDN release
 releases/
-.cdn-config.worktrees/
 .cdn-config
