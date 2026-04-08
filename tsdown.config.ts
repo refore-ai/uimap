@@ -2,8 +2,11 @@ import { defineConfig } from 'tsdown';
 
 export default defineConfig({
   entry: 'src/cli.ts',
-  // Bundle all dependencies, don't mark as external
-  noExternal: [/.*/],
+  // Bundle all dependencies
+  deps: {
+    alwaysBundle: [/.*/],
+    onlyBundle: false,
+  },
   // Generate shebang
   shims: true,
 });

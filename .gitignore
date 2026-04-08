@@ -57,3 +57,4 @@ mcp.json
 # CDN release
 releases/
 .cdn-config
+skill-lock.json
