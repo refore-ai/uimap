@@ -38,7 +38,7 @@ npm install -g @refore-ai/uimap
 
 **Via CDN (if npm is unavailable):**
 ```bash
-curl -fsSL https://s.dwimg.top/uimap-install/install.sh | bash
+curl -fsSL https://static.reforeai.com/uimap-install/install.sh | bash
 ```
 
 See [@refore-ai/uimap on npm](https://www.npmjs.com/package/@refore-ai/uimap) for full installation options.
